@@ -1,0 +1,9 @@
+{
+	"characterName": "Xander",
+	"displayName": "Xan",
+	"nameEnabled": true,
+	"image": "XanderDefault",
+	"scrollspeed": 1,
+	"audio": "Hello.mp3",
+	"text": "Hello!"
+}

@@ -1,0 +1,29 @@
+{
+	"group": [
+		{
+			"id": 0,
+			"conversation": [
+				{
+					"DisplayName": "Xander",
+					"ScrollSpeed": 0.1,
+					"Text": "This has name!"
+				},
+				{
+					"DisplayName": "NONE",
+					"Image": "Dialogue Images/Xander/TestPortrait",
+					"ScrollSpeed": 1,
+					"Text": "Now no name but image!"
+				},
+				{
+					"DisplayName": "Xander",
+					"ScrollSpeed": 0.5,
+					"Text": "Now both!"
+				},
+				{
+					"Image": "NONE",
+					"Text": "Now it's just the text!"
+				}
+			]
+		}
+	]
+}

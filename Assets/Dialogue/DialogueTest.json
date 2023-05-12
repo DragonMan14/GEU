@@ -1,0 +1,65 @@
+{
+	"node": {
+		"id": "dialogue_1",
+		"textList": [
+			{
+				"characterName": "Xander",
+				"displayName": "Xander",
+				"nameEnabled": true,
+				"image": "PlayerDefault",
+				"scrollspeed": 1,
+				"audio": {
+					"english": "Hello_en.mp3",
+					"spanish": "Hello_sp.mp3",
+					"france": "Hello_fr.mp3",
+				},
+				"text": "Hello! My name is Xander!",
+				"options": [
+					{
+						"option1": {
+							"text": "I want to shop here",
+							"action": "OpenShop"
+						},
+						"option2": {
+							"text": "Goodbye!",
+							"action": "GoTo(dialogue_2)"
+						}
+					}
+				]
+			}
+		]
+	}
+},
+{
+	"node": {
+		"id": "dialogue_2",
+		"textList": [
+			{
+				"characterName": "Xander",
+				"nameEnabled": true,
+				"image": "PlayerDefault",
+				"scrollspeed": 1,
+				"audio": [
+					{
+						"english": "Hello_en.mp3",
+						"spanish": "Hello_sp.mp3",
+						"france": "Hello_fr.mp3",
+					}
+				],
+				"text": "Hello! My name is Xander!",
+				"options": [
+					{
+						"option1": {
+							"text": "I want to shop here",
+							"action": "OpenShop("
+						},
+						"option2": {
+							"text": "Goodbye!",
+							"action": "GoTo(dialoge_2)"
+						}
+					}
+				]
+			}
+		]
+	}
+}

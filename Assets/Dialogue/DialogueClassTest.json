@@ -1,0 +1,36 @@
+{
+	"id": "xander:start",
+	"conversation": [
+		{
+			"characterName": "Xander",
+			"displayName": "Xan",
+			"nameEnabled": true,
+			"image": "XanderDefault",
+			"scrollspeed": 1,
+			"audio": "Hello.mp3",
+			"text": "Hello!"
+		},
+		{
+			"characterName": "Xander2",
+			"displayName": "Xanxan",
+			"nameEnabled": true,
+			"image": "XanderDefault",
+			"scrollspeed": 1,
+			"audio": "Hello.mp3",
+			"text": "Hello!"
+		},
+		{	
+			"text": "Hi!",
+			"options": [
+				{
+					"displayName": "Hi do you wanna shop?",
+					"function": "OpenShop"
+				},
+				{
+					"displayText": "goodnight",
+					"condition": "IsNight"
+				}
+			]
+		}
+	]
+}
