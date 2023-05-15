@@ -9,6 +9,10 @@ TagManager:
   - DialogueImage
   - DialogueName
   - DialogueNameText
+  - CG
+  - DialogueOptionsMenu
+  - DialogueOptionsText
+  - DialogueOptionsCursor
   layers:
   - Default
   - TransparentFX

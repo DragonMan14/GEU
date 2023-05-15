@@ -23,6 +23,15 @@ public class PlayerInput : MonoBehaviour
     #pragma warning disable IDE0051 // Remove unused private members
     private void OnMove(InputValue inputValue)
     {
+        if (UIManager.Instance.DialogueOptionsOpen)
+        {
+            UIManager.Instance.HandleDialogueOptionsInput(inputValue.Get<Vector2>());
+            return;
+        }
+        if (UIManager.Instance.DialogueOpen)
+        {
+            return;
+        }
         playerManager.PlayerMovement.SetMovementChange(inputValue.Get<Vector2>());
     }
 
@@ -31,7 +40,8 @@ public class PlayerInput : MonoBehaviour
         IInteractable currentInteraction = PlayerManager.Instance.GetCurrentInteraction();
         if (playerManager.IsInRangeOfInteraction() && currentInteraction != null) 
         {
-            currentInteraction.Interact();    
+            currentInteraction.Interact();
+            playerManager.PlayerMovement.SetMovementChange(Vector2.zero);
         }
     }
     #pragma warning restore IDE0051 // Remove unused private members

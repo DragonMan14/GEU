@@ -13,13 +13,19 @@ public class DialogueAPI : MonoBehaviour
         public string CharacterName;
         public string DisplayName;
         public string Image;
-        public float ScrollSpeed;
+        public float ImageAnimationSpeed;
+        public string CG;
+        public float CGAnimationSpeed;
         public string Audio;
         public string Text;
+        public float TextScrollSpeed;
 
         public bool HasDisplayName => DisplayName != null;
         public bool HasImage => Image != null;
-        public bool HasScrollSpeed => ScrollSpeed != 0;
+        public bool HasImageAnimationSpeed => ImageAnimationSpeed != 0;
+        public bool HasCG => CG != null;
+        public bool HasCGAnimationSpeed => CGAnimationSpeed != 0;
+        public bool HasTextScrollSpeed => TextScrollSpeed != 0;
     }
     #endregion
 
@@ -29,8 +35,10 @@ public class DialogueAPI : MonoBehaviour
     {
         public int Id { get; }
         public TextAPI[] conversation;
-        private int _currentIndex;
-        private float _currentScrollSpeed = 1f;
+        public int CurrentIndex; 
+        private float _currentTextScrollSpeed = 1f;
+        private float _currentImageAnimationSpeed = 1f;
+        private float _currentCGAnimationSpeed = 1f;
 
         private string GetTextAtIndex(int index)
         {
@@ -40,7 +48,6 @@ public class DialogueAPI : MonoBehaviour
             }
             return conversation[index].Text;
         }
-
         private string GetDisplayNameAtIndex(int index)
         {
             if (index >= conversation.Length)
@@ -49,7 +56,6 @@ public class DialogueAPI : MonoBehaviour
             }
             return conversation[index].DisplayName;
         }
-
         private string GetImageAtIndex(int index)
         {
             if (index >= conversation.Length)
@@ -58,15 +64,38 @@ public class DialogueAPI : MonoBehaviour
             }
             return conversation[index].Image;
         }
-        private float GetScrollSpeedAtIndex(int index)
+        private float GetImageAnimationSpeedAtIndex(int index)
         {
             if (index >= conversation.Length)
             {
                 throw new Exception("Index is greater than the length of conversation");
             }
-            return conversation[index].ScrollSpeed;
+            return conversation[index].ImageAnimationSpeed;
         }
-
+        private string GetCGAtIndex(int index)
+        {
+            if (index >= conversation.Length)
+            {
+                throw new Exception("Index is greater than the length of conversation");
+            }
+            return conversation[index].CG;
+        }
+        private float GetCGAnimationSpeedAtIndex(int index)
+        {
+            if (index >= conversation.Length)
+            {
+                throw new Exception("Index is greater than the length of conversation");
+            }
+            return conversation[index].CGAnimationSpeed;
+        }
+        private float GetTextScrollSpeedAtIndex(int index)
+        {
+            if (index >= conversation.Length)
+            {
+                throw new Exception("Index is greater than the length of conversation");
+            }
+            return conversation[index].TextScrollSpeed;
+        }
         private bool HasDisplayNameChangeAtIndex(int index)
         {
             if (index >= conversation.Length)
@@ -75,7 +104,6 @@ public class DialogueAPI : MonoBehaviour
             }
             return conversation[index].HasDisplayName;
         }
-
         private bool HasImageChangeAtIndex(int index)
         {
             if (index >= conversation.Length)
@@ -84,14 +112,37 @@ public class DialogueAPI : MonoBehaviour
             }
             return conversation[index].HasImage;
         }
-
-        private bool HasScrollSpeedChangeAtIndex(int index)
+        private bool HasImageAnimationSpeedChangeAtIndex(int index)
         {
             if (index >= conversation.Length)
             {
                 throw new Exception("Index is greater than the length of conversation");
             }
-            return conversation[index].HasScrollSpeed;
+            return conversation[index].HasImageAnimationSpeed;
+        }
+        private bool HasCGChangeAtIndex(int index)
+        {
+            if (index >= conversation.Length)
+            {
+                throw new Exception("Index is greater than the length of conversation");
+            }
+            return conversation[index].HasCG;
+        }
+        private bool HasCGAnimationSpeedChangeAtIndex(int index)
+        {
+            if (index >= conversation.Length)
+            {
+                throw new Exception("Index is greater than the length of conversation");
+            }
+            return conversation[index].HasCGAnimationSpeed;
+        }
+        private bool HasTextScrollSpeedChangeAtIndex(int index)
+        {
+            if (index >= conversation.Length)
+            {
+                throw new Exception("Index is greater than the length of conversation");
+            }
+            return conversation[index].HasTextScrollSpeed;
         }
 
         private void StartDialogue()
@@ -100,73 +151,114 @@ public class DialogueAPI : MonoBehaviour
             UIManager.Instance.EnableDialogueBox();
             UIManager.Instance.EnableDialogueText();
 
-            if (HasImageChangeAtIndex(0))
-            {
-                UIManager.Instance.EnableDialogueImage();
-                UIManager.Instance.LoadImage(GetImageAtIndex(0));
-            }
             if (HasDisplayNameChangeAtIndex(0))
             {
                 UIManager.Instance.EnableDialogueName();
                 UIManager.Instance.SetDialogueNameText(GetDisplayNameAtIndex(0));
             }
-            if (HasScrollSpeedChangeAtIndex(_currentIndex))
+            if (HasImageChangeAtIndex(0))
             {
-                _currentScrollSpeed = GetScrollSpeedAtIndex(_currentIndex);
+                UIManager.Instance.EnableDialogueImage();
+                UIManager.Instance.LoadImages(GetImageAtIndex(0), _currentImageAnimationSpeed);
             }
-            UIManager.Instance.StartScrollDialogue(_currentScrollSpeed);
-            _currentIndex++;
+            if (HasImageAnimationSpeedChangeAtIndex(0))
+            {
+                _currentImageAnimationSpeed = GetImageAnimationSpeedAtIndex(0);
+            }
+            if (HasCGChangeAtIndex(0))
+            {
+                UIManager.Instance.EnableCG();
+                UIManager.Instance.LoadCGs(GetCGAtIndex(0), _currentCGAnimationSpeed);
+            }
+            if (HasCGAnimationSpeedChangeAtIndex(0))
+            {
+                _currentCGAnimationSpeed = GetCGAnimationSpeedAtIndex(0);
+            }
+            if (HasTextScrollSpeedChangeAtIndex(0))
+            {
+                _currentTextScrollSpeed = GetTextScrollSpeedAtIndex(0);
+            }
+            UIManager.Instance.StartScrollDialogue(_currentTextScrollSpeed);
+            UIManager.Instance.DisableOptionsMenu();
+            CurrentIndex++;
         }
 
         private void ProgressDialogue()
         {
-            if (UIManager.Instance.TextIsScrolling)
+            if (UIManager.Instance.TextIsScrolling || UIManager.Instance.ImageInAnimation)
             {
-                UIManager.Instance.EndScrollDialogue();
+                if (UIManager.Instance.TextIsScrolling)
+                {
+                    UIManager.Instance.EndScrollDialogue();
+                }
+                if (UIManager.Instance.ImageInAnimation)
+                {
+                    UIManager.Instance.EndImageAnimation();
+                }
                 return;
             }
-
-            UIManager.Instance.SetDialogueText(GetTextAtIndex(_currentIndex));
-            if (HasImageChangeAtIndex(_currentIndex))
-            {
-                UIManager.Instance.EnableDialogueImage();
-                UIManager.Instance.LoadImage(GetImageAtIndex(_currentIndex));
-            }
-            if (HasDisplayNameChangeAtIndex(_currentIndex))
+            UIManager.Instance.SetDialogueText(GetTextAtIndex(CurrentIndex));
+            if (HasDisplayNameChangeAtIndex(CurrentIndex))
             {
                 UIManager.Instance.EnableDialogueName();
-                UIManager.Instance.SetDialogueNameText(GetDisplayNameAtIndex(_currentIndex));
+                UIManager.Instance.SetDialogueNameText(GetDisplayNameAtIndex(CurrentIndex));
             }
-            if (HasScrollSpeedChangeAtIndex(_currentIndex))
+            if (HasImageChangeAtIndex(CurrentIndex))
             {
-                _currentScrollSpeed = GetScrollSpeedAtIndex(_currentIndex);
+                UIManager.Instance.EnableDialogueImage();
+                UIManager.Instance.LoadImages(GetImageAtIndex(CurrentIndex), _currentImageAnimationSpeed);
             }
-            UIManager.Instance.StartScrollDialogue(_currentScrollSpeed);
-            _currentIndex++;
+            if (HasImageAnimationSpeedChangeAtIndex(CurrentIndex))
+            {
+                _currentImageAnimationSpeed = GetImageAnimationSpeedAtIndex(CurrentIndex);
+            }
+            if (HasCGChangeAtIndex(CurrentIndex))
+            {
+                UIManager.Instance.EnableCG();
+                UIManager.Instance.LoadCGs(GetCGAtIndex(CurrentIndex), _currentCGAnimationSpeed);
+            }
+            if (HasCGAnimationSpeedChangeAtIndex(CurrentIndex))
+            {
+                _currentCGAnimationSpeed = GetCGAnimationSpeedAtIndex(CurrentIndex);
+            }
+            if (HasTextScrollSpeedChangeAtIndex(CurrentIndex))
+            {
+                _currentTextScrollSpeed = GetTextScrollSpeedAtIndex(CurrentIndex);
+            }
+          
+            UIManager.Instance.StartScrollDialogue(_currentTextScrollSpeed);
+            CurrentIndex++;
         }
 
         private void EndDialogue()
         {
-            if (UIManager.Instance.TextIsScrolling)
+            if (UIManager.Instance.TextIsScrolling || UIManager.Instance.ImageInAnimation)
             {
-                UIManager.Instance.EndScrollDialogue();
+                if (UIManager.Instance.TextIsScrolling)
+                {
+                    UIManager.Instance.EndScrollDialogue();
+                }
+                if (UIManager.Instance.ImageInAnimation)
+                {
+                    UIManager.Instance.EndImageAnimation();
+                }
                 return;
             }
-            _currentIndex = 0;
+            CurrentIndex = 0;
             UIManager.Instance.DisableDialogueUI();
         }
 
         public void PlayDialogue()
         {
-            if (_currentIndex == 0)
+            if (CurrentIndex == 0)
             {
                 StartDialogue();
             }
-            else if (_currentIndex < conversation.Length)
+            else if (CurrentIndex < conversation.Length)
             {
                 ProgressDialogue();
             }
-            else if (_currentIndex >= conversation.Length)
+            else if (CurrentIndex >= conversation.Length)
             {
                 EndDialogue();
             }
