@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
+    private PlayerManager playerManager;
 
     private RawImage _dialogueBox;
     private TextMeshProUGUI _dialogueText;
@@ -79,6 +80,11 @@ public class UIManager : MonoBehaviour
         _dialogueOptionsCursorPosition = GameObject.FindGameObjectWithTag("DialogueOptionsCursor").GetComponent<RectTransform>();
     }
 
+    private void Start()
+    {
+        playerManager = PlayerManager.Instance;
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -111,8 +117,13 @@ public class UIManager : MonoBehaviour
     private void IncreaseTextCharacterVisibility() 
     { 
         _dialogueText.maxVisibleCharacters++;
+        if (!AudioManager.Instance.IsSFXPlaying("TextScroll"))
+        {
+            AudioManager.Instance.PlaySFX("TextScroll");
+        }
         if (_dialogueText.maxVisibleCharacters >= _dialogueText.GetTextInfo(_dialogueText.text).characterCount)
         {
+            AudioManager.Instance.StopSFX("TextScroll");
             TextIsScrolling = false;
             CancelInvoke(nameof(IncreaseTextCharacterVisibility));
         }
@@ -121,12 +132,14 @@ public class UIManager : MonoBehaviour
     {
         TextIsScrolling = true;
         _dialogueText.maxVisibleCharacters = 0;
+        //AudioManager.Instance.SetSFXSpeed("TextScroll", scrollSpeed);
         float finalSpeed = BaseTextScrollSpeed / scrollSpeed;
         InvokeRepeating(nameof(IncreaseTextCharacterVisibility), 0, finalSpeed);
     }
 
     public void EndScrollDialogue()
     {
+        AudioManager.Instance.StopSFX("TextScroll");
         TextIsScrolling = false;
         _dialogueText.maxVisibleCharacters = _dialogueText.GetTextInfo(_dialogueText.text).characterCount;
         CancelInvoke(nameof(IncreaseTextCharacterVisibility));
@@ -294,6 +307,7 @@ public class UIManager : MonoBehaviour
 
     public void EnableDialogueOptionsMenu(int numOfOptions)
     {
+        playerManager.PlayerMovement.SetMovementState(MovementState.DialogueOptionsMenu);
         _dialogueOptionsMenu.enabled = true;
         _dialogueOptionsMenuPosition.sizeDelta = new Vector2(_dialogueOptionsMenuWidth, 40 *  numOfOptions);
         for (int option = 0; option < numOfOptions; option++)
@@ -309,6 +323,7 @@ public class UIManager : MonoBehaviour
 
     public void DisableOptionsMenu()
     {
+        playerManager.PlayerMovement.SetMovementState(playerManager.PlayerMovement.PreviousState);
         _dialogueOptionsMenu.enabled = false;
         for (int option = 0; option < _maxDialogueOptions; option++)
         {

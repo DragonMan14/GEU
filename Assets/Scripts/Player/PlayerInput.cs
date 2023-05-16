@@ -6,8 +6,11 @@ using UnityEngine.InputSystem;
 public class PlayerInput : MonoBehaviour
 {
     private PlayerManager playerManager;
-    // Start is called before the first frame update
-    void Start()
+
+    [SerializeField] private InputActionReference Movement;
+    [SerializeField] private InputActionReference Interaction;
+
+    private void Start()
     {
         playerManager = PlayerManager.Instance;
         if (playerManager.PlayerInput != null && playerManager.PlayerInput != this)
@@ -23,16 +26,24 @@ public class PlayerInput : MonoBehaviour
     #pragma warning disable IDE0051 // Remove unused private members
     private void OnMove(InputValue inputValue)
     {
-        if (UIManager.Instance.DialogueOptionsOpen)
+        if (playerManager.PlayerMovement.CurrentState == MovementState.DialogueOptionsMenu)
         {
             UIManager.Instance.HandleDialogueOptionsInput(inputValue.Get<Vector2>());
             return;
         }
-        if (UIManager.Instance.DialogueOpen)
+        else if (UIManager.Instance.DialogueOpen)
         {
             return;
         }
-        playerManager.PlayerMovement.SetMovementChange(inputValue.Get<Vector2>());
+        else if (playerManager.PlayerMovement.CurrentState == MovementState.Openworld)
+        {
+            print(inputValue.Get<Vector2>());
+            playerManager.PlayerMovement.SetMovementChange(inputValue.Get<Vector2>());
+        }
+        else if (playerManager.PlayerMovement.CurrentState == MovementState.Battlesystem)
+        {
+            playerManager.PlayerMovement.SetMovementChange(inputValue.Get<Vector2>());
+        }
     }
 
     private void OnInteract()
@@ -43,6 +54,20 @@ public class PlayerInput : MonoBehaviour
             currentInteraction.Interact();
             playerManager.PlayerMovement.SetMovementChange(Vector2.zero);
         }
+    }
+
+    public bool MovementIsPressed()
+    {
+        return !Movement.action.ReadValue<Vector2>().Equals(Vector2.zero);
+    }
+    public bool MovementWasPressedThisFrame()
+    {
+        return Movement.action.triggered && !Movement.action.ReadValue<Vector2>().Equals(Vector2.zero);
+    }
+
+    public bool MovementWasReleasedThisFrame()
+    {
+        return Movement.action.triggered && Movement.action.ReadValue<Vector2>().Equals(Vector2.zero);
     }
     #pragma warning restore IDE0051 // Remove unused private members
 
