@@ -7,11 +7,10 @@ using UnityEngine.InputSystem;
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance;
-    public PlayerMovement PlayerMovement { get; private set; }
-    public PlayerInput PlayerInput { get; private set; }
-
+    public PlayerMovementManager PlayerMovementManager;
+    public PlayerInputManager PlayerInputManager;
     public List<GameObject> interactions;
-    // Start is called before the first frame update
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -24,16 +23,6 @@ public class PlayerManager : MonoBehaviour
         }
         interactions = new List<GameObject>();
     }
-
-    public void SetPlayerMovement(PlayerMovement playerMovement)
-    {
-        this.PlayerMovement = playerMovement;
-    }
-    public void SetPlayerInput(PlayerInput playerInput)
-    {
-        this.PlayerInput = playerInput;
-    }
-
     #region TriggerRegisterer
     public void AddInteractable(GameObject trigger)
     {

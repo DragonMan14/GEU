@@ -110,7 +110,11 @@ public class UIManager : MonoBehaviour
     }
 
     #region Dialogue
-    public void EnableDialogueBox() { _dialogueBox.enabled = true; }
+    public void EnableDialogueBox() 
+    {
+        _dialogueBox.enabled = true;
+        playerManager.PlayerInputManager.SetInputState(InputState.Dialogue);
+    }
     public void DisableDialogueBox() { _dialogueBox.enabled = false; }
     public void EnableDialogueText() { _dialogueText.enabled = true; }
     public void DisableDialogueText() { _dialogueText.enabled = false; }
@@ -307,7 +311,6 @@ public class UIManager : MonoBehaviour
 
     public void EnableDialogueOptionsMenu(int numOfOptions)
     {
-        playerManager.PlayerMovement.SetMovementState(MovementState.DialogueOptionsMenu);
         _dialogueOptionsMenu.enabled = true;
         _dialogueOptionsMenuPosition.sizeDelta = new Vector2(_dialogueOptionsMenuWidth, 40 *  numOfOptions);
         for (int option = 0; option < numOfOptions; option++)
@@ -323,7 +326,6 @@ public class UIManager : MonoBehaviour
 
     public void DisableOptionsMenu()
     {
-        playerManager.PlayerMovement.SetMovementState(playerManager.PlayerMovement.PreviousState);
         _dialogueOptionsMenu.enabled = false;
         for (int option = 0; option < _maxDialogueOptions; option++)
         {
@@ -361,13 +363,13 @@ public class UIManager : MonoBehaviour
         _dialogueOptionsCursorPosition.anchoredPosition = new Vector2(_dialogueOptionsCursorXPos, newYPos);
     }
 
-    public void HandleDialogueOptionsInput(Vector2 input)
+    public void HandleDialogueOptionsInput(float input)
     {
-        if (input.y > 0 && CurrentOption < _numOfEnabledOptions - 1)
+        if (input > 0 && CurrentOption < _numOfEnabledOptions - 1)
         {
             SetCurrentOption(++CurrentOption);
         }
-        else if (input.y < 0 && CurrentOption > 0)
+        else if (input < 0 && CurrentOption > 0)
         {
             SetCurrentOption(--CurrentOption);
         }
@@ -380,6 +382,8 @@ public class UIManager : MonoBehaviour
         DisableDialogueName();
         DisableCG();
         DisableOptionsMenu();
+        InputState state = playerManager.PlayerInputManager.PreviousState;
+        playerManager.PlayerInputManager.SetInputState(state);
     }
 
     #endregion
