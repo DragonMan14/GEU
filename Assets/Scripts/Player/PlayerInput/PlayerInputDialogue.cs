@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 public class PlayerInputDialogue : MonoBehaviour
 {
     private PlayerManager playerManager;
-    private PlayerInputActions inputActions;
+    private PlayerInputActions _inputActions;
 
     private void Start()
     {
@@ -19,13 +19,13 @@ public class PlayerInputDialogue : MonoBehaviour
         {
             playerManager.PlayerInputManager.PlayerInputDialogue = this;
         }
-        inputActions = playerManager.PlayerInputManager.InputActions;
+        _inputActions = playerManager.PlayerInputManager.InputActions;
         EnableAllInput();
     }
 
     private void OnEnable()
     {
-        if (inputActions == null)
+        if (_inputActions == null)
         {
             return;
         }
@@ -34,6 +34,10 @@ public class PlayerInputDialogue : MonoBehaviour
 
     private void OnDisable()
     {
+        if (_inputActions == null)
+        {
+            return;
+        }
         DisableAllInput();
     }
 
@@ -51,35 +55,30 @@ public class PlayerInputDialogue : MonoBehaviour
 
     private void EnableMovement()
     {
-        inputActions.Dialogue.Move.performed += MovePerformed;
+        _inputActions.Dialogue.Move.performed += MovePerformed;
     }
 
     private void DisableMovement()
     {
-        inputActions.Dialogue.Move.performed -= MovePerformed;
+        _inputActions.Dialogue.Move.performed -= MovePerformed;
     }
 
     public void EnableProgressDialogue()
     {
-        inputActions.Dialogue.ProgressDialogue.performed += ProgressDialoguePerformed;
+        _inputActions.Dialogue.ProgressDialogue.performed += ProgressDialoguePerformed;
     }
 
     public void DisableProgressDialogue()
     {
-        inputActions.Dialogue.ProgressDialogue.performed -= ProgressDialoguePerformed;
+        _inputActions.Dialogue.ProgressDialogue.performed -= ProgressDialoguePerformed;
     }
     private void MovePerformed(InputAction.CallbackContext obj)
     {
-        print("test");
-        if (UIManager.Instance.DialogueOptionsOpen)
-        {
-            UIManager.Instance.HandleDialogueOptionsInput(obj.ReadValue<float>());
-        }
+        UIManager.Instance.DialogueManager.HandleDialogueOptionsInput(obj.ReadValue<float>()); 
     }
 
     public void ProgressDialoguePerformed(InputAction.CallbackContext obj)
     {
-        print("Hi");
         IInteractable currentInteraction = PlayerManager.Instance.GetCurrentInteraction();
         if (playerManager.IsInRangeOfInteraction() && currentInteraction != null)
         {

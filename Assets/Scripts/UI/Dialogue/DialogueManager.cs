@@ -5,9 +5,8 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-public class UIManager : MonoBehaviour
+public class DialogueManager : MonoBehaviour
 {
-    public static UIManager Instance;
     private PlayerManager playerManager;
 
     private RawImage _dialogueBox;
@@ -20,7 +19,7 @@ public class UIManager : MonoBehaviour
 
     private RawImage _dialogueOptionsMenu;
     private RectTransform _dialogueOptionsMenuPosition;
-    public TextMeshProUGUI[] _dialogueOptions;
+    private TextMeshProUGUI[] _dialogueOptions;
     private readonly int _maxDialogueOptions = 5;
     private RawImage _dialogueOptionsCursor;
     private RectTransform _dialogueOptionsCursorPosition;
@@ -50,14 +49,6 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this);
-        }
-        else
-        {
-            Instance = this;
-        }
         _dialogueBox = GameObject.FindGameObjectWithTag("DialogueBox").GetComponent<RawImage>();
         _dialogueText = GameObject.FindGameObjectWithTag("DialogueText").GetComponent<TextMeshProUGUI>();
         _dialogueTextPosition = GameObject.FindGameObjectWithTag("DialogueText").GetComponent<RectTransform>();
@@ -83,29 +74,13 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         playerManager = PlayerManager.Instance;
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (UIManager.Instance.DialogueManager != null && UIManager.Instance.DialogueManager != this)
         {
-            SetCurrentOption(0);
+            Destroy(this);
         }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        else
         {
-            SetCurrentOption(1);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            SetCurrentOption(2);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            SetCurrentOption(3);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha5))
-        {
-            SetCurrentOption(4);
+            UIManager.Instance.DialogueManager = this;
         }
     }
 
@@ -357,6 +332,10 @@ public class UIManager : MonoBehaviour
         if (index >= _numOfEnabledOptions)
         {
             throw new Exception("Index is greater than the number of enabled options");
+        }
+        if (index < 0)
+        {
+            throw new Exception("Index is less than zero");
         }
         CurrentOption = index;
         float newYPos = _dialogueOptions[CurrentOption].GetComponent<RectTransform>().anchoredPosition.y;

@@ -8,14 +8,14 @@ public class Interactable : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!collision.gameObject.CompareTag("Player")) { return; }
+        if (!PlayerManager.Instance.CollisionHasTagPlayer(collision)) { return; }
         playerInRange = true;
         PlayerManager.Instance.AddInteractable(this.gameObject);
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (!collision.gameObject.CompareTag("Player")) { return; }
+        if (!PlayerManager.Instance.CollisionHasTagPlayer(collision)) { return; }
         playerInRange = false;
         PlayerManager.Instance.RemoveInteractable(this.gameObject);
     }

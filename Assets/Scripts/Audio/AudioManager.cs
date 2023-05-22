@@ -41,21 +41,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.G)) 
-        {
-            SwapMusic("Explore");
-        }
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            StartCoroutine(FadeMusic("Home", 5f, 0.5f));
-        }
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            SetAudioSourceClip(_musicSource1, FindMusic("Home"));
-        }
-    }
     private void SetAudioSourceClip(AudioSource source, Sound sound)
     {
         source.clip = sound.clip;

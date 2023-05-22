@@ -8,7 +8,8 @@ public enum InputState
 {
     Openworld,
     BattleSystem,
-    Dialogue,
+    BatleSystemMenu,
+    Dialogue
 }
 
 public class PlayerInputManager : MonoBehaviour
@@ -18,6 +19,7 @@ public class PlayerInputManager : MonoBehaviour
     public PlayerInputOverworld PlayerInputOverworld;
     public PlayerInputBattleSystem PlayerInputBattleSystem;
     public PlayerInputDialogue PlayerInputDialogue;
+    public PlayerInputBattleSystemMenu PlayerInputBattleSystemMenu;
 
     public InputState PreviousState;
     public InputState CurrentState;
@@ -40,15 +42,7 @@ public class PlayerInputManager : MonoBehaviour
         {
             playerManager.PlayerInputManager = this;
         }
-
-        if (CurrentState == InputState.Openworld)
-        {
-            ToggleActionMap(InputActions.PlayerOverworld);
-        }
-        else if (CurrentState == InputState.BattleSystem)
-        {
-            ToggleActionMap(InputActions.PlayerBattleSystem);
-        }
+        ToggleActionMap(CurrentState);
     }
 
     public void SetInputState(InputState state)
@@ -59,16 +53,32 @@ public class PlayerInputManager : MonoBehaviour
         }
         PreviousState = CurrentState;
         CurrentState = state;
+        ToggleActionMap(state);
+    }
+    
+    public void ToggleActionMap(InputState state)
+    {
         if (state == InputState.Openworld)
         {
+            playerManager.PlayerOverworld.SetActive(true);
+            playerManager.PlayerCombat.SetActive(false);
             ToggleActionMap(InputActions.PlayerOverworld);
         }
         else if (state == InputState.BattleSystem)
         {
+            playerManager.PlayerOverworld.SetActive(false);
+            playerManager.PlayerCombat.SetActive(true);
             ToggleActionMap(InputActions.PlayerBattleSystem);
         }
-        else if (state == InputState.Dialogue) {
+        else if (state == InputState.Dialogue)
+        {
             ToggleActionMap(InputActions.Dialogue);
+        }
+        else if (state == InputState.BatleSystemMenu)
+        {
+            playerManager.PlayerOverworld.SetActive(false);
+            playerManager.PlayerCombat.SetActive(false);
+            ToggleActionMap(InputActions.PlayerBattleSystemMenu);
         }
     }
 
@@ -80,6 +90,5 @@ public class PlayerInputManager : MonoBehaviour
         }
         InputActions.Disable();
         actionMap.Enable();
-        print(actionMap.ToString());
     }
 }

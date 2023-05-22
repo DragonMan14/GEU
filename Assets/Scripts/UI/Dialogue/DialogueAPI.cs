@@ -147,19 +147,19 @@ public class DialogueAPI : MonoBehaviour
 
         private void StartDialogue()
         {
-            UIManager.Instance.SetDialogueText(GetTextAtIndex(0));
-            UIManager.Instance.EnableDialogueBox();
-            UIManager.Instance.EnableDialogueText();
+            UIManager.Instance.DialogueManager.SetDialogueText(GetTextAtIndex(0));
+            UIManager.Instance.DialogueManager.EnableDialogueBox();
+            UIManager.Instance.DialogueManager.EnableDialogueText();
 
             if (HasDisplayNameChangeAtIndex(0))
             {
-                UIManager.Instance.EnableDialogueName();
-                UIManager.Instance.SetDialogueNameText(GetDisplayNameAtIndex(0));
+                UIManager.Instance.DialogueManager.EnableDialogueName();
+                UIManager.Instance.DialogueManager.SetDialogueNameText(GetDisplayNameAtIndex(0));
             }
             if (HasImageChangeAtIndex(0))
             {
-                UIManager.Instance.EnableDialogueImage();
-                UIManager.Instance.LoadImages(GetImageAtIndex(0), _currentImageAnimationSpeed);
+                UIManager.Instance.DialogueManager.EnableDialogueImage();
+                UIManager.Instance.DialogueManager.LoadImages(GetImageAtIndex(0), _currentImageAnimationSpeed);
             }
             if (HasImageAnimationSpeedChangeAtIndex(0))
             {
@@ -167,8 +167,8 @@ public class DialogueAPI : MonoBehaviour
             }
             if (HasCGChangeAtIndex(0))
             {
-                UIManager.Instance.EnableCG();
-                UIManager.Instance.LoadCGs(GetCGAtIndex(0), _currentCGAnimationSpeed);
+                UIManager.Instance.DialogueManager.EnableCG();
+                UIManager.Instance.DialogueManager.LoadCGs(GetCGAtIndex(0), _currentCGAnimationSpeed);
             }
             if (HasCGAnimationSpeedChangeAtIndex(0))
             {
@@ -178,35 +178,35 @@ public class DialogueAPI : MonoBehaviour
             {
                 _currentTextScrollSpeed = GetTextScrollSpeedAtIndex(0);
             }
-            UIManager.Instance.StartScrollDialogue(_currentTextScrollSpeed);
-            UIManager.Instance.DisableOptionsMenu();
+            UIManager.Instance.DialogueManager.StartScrollDialogue(_currentTextScrollSpeed);
+            UIManager.Instance.DialogueManager.DisableOptionsMenu();
             CurrentIndex++;
         }
 
         private void ProgressDialogue()
         {
-            if (UIManager.Instance.TextIsScrolling || UIManager.Instance.ImageInAnimation)
+            if (UIManager.Instance.DialogueManager.TextIsScrolling || UIManager.Instance.DialogueManager.ImageInAnimation)
             {
-                if (UIManager.Instance.TextIsScrolling)
+                if (UIManager.Instance.DialogueManager.TextIsScrolling)
                 {
-                    UIManager.Instance.EndScrollDialogue();
+                    UIManager.Instance.DialogueManager.EndScrollDialogue();
                 }
-                if (UIManager.Instance.ImageInAnimation)
+                if (UIManager.Instance.DialogueManager.ImageInAnimation)
                 {
-                    UIManager.Instance.EndImageAnimation();
+                    UIManager.Instance.DialogueManager.EndImageAnimation();
                 }
                 return;
             }
-            UIManager.Instance.SetDialogueText(GetTextAtIndex(CurrentIndex));
+            UIManager.Instance.DialogueManager.SetDialogueText(GetTextAtIndex(CurrentIndex));
             if (HasDisplayNameChangeAtIndex(CurrentIndex))
             {
-                UIManager.Instance.EnableDialogueName();
-                UIManager.Instance.SetDialogueNameText(GetDisplayNameAtIndex(CurrentIndex));
+                UIManager.Instance.DialogueManager.EnableDialogueName();
+                UIManager.Instance.DialogueManager.SetDialogueNameText(GetDisplayNameAtIndex(CurrentIndex));
             }
             if (HasImageChangeAtIndex(CurrentIndex))
             {
-                UIManager.Instance.EnableDialogueImage();
-                UIManager.Instance.LoadImages(GetImageAtIndex(CurrentIndex), _currentImageAnimationSpeed);
+                UIManager.Instance.DialogueManager.EnableDialogueImage();
+                UIManager.Instance.DialogueManager.LoadImages(GetImageAtIndex(CurrentIndex), _currentImageAnimationSpeed);
             }
             if (HasImageAnimationSpeedChangeAtIndex(CurrentIndex))
             {
@@ -214,8 +214,8 @@ public class DialogueAPI : MonoBehaviour
             }
             if (HasCGChangeAtIndex(CurrentIndex))
             {
-                UIManager.Instance.EnableCG();
-                UIManager.Instance.LoadCGs(GetCGAtIndex(CurrentIndex), _currentCGAnimationSpeed);
+                UIManager.Instance.DialogueManager.EnableCG();
+                UIManager.Instance.DialogueManager.LoadCGs(GetCGAtIndex(CurrentIndex), _currentCGAnimationSpeed);
             }
             if (HasCGAnimationSpeedChangeAtIndex(CurrentIndex))
             {
@@ -226,26 +226,26 @@ public class DialogueAPI : MonoBehaviour
                 _currentTextScrollSpeed = GetTextScrollSpeedAtIndex(CurrentIndex);
             }
           
-            UIManager.Instance.StartScrollDialogue(_currentTextScrollSpeed);
+            UIManager.Instance.DialogueManager.StartScrollDialogue(_currentTextScrollSpeed);
             CurrentIndex++;
         }
 
         private void EndDialogue()
         {
-            if (UIManager.Instance.TextIsScrolling || UIManager.Instance.ImageInAnimation)
+            if (UIManager.Instance.DialogueManager.TextIsScrolling || UIManager.Instance.DialogueManager.ImageInAnimation)
             {
-                if (UIManager.Instance.TextIsScrolling)
+                if (UIManager.Instance.DialogueManager.TextIsScrolling)
                 {
-                    UIManager.Instance.EndScrollDialogue();
+                    UIManager.Instance.DialogueManager.EndScrollDialogue();
                 }
-                if (UIManager.Instance.ImageInAnimation)
+                if (UIManager.Instance.DialogueManager.ImageInAnimation)
                 {
-                    UIManager.Instance.EndImageAnimation();
+                    UIManager.Instance.DialogueManager.EndImageAnimation();
                 }
                 return;
             }
             CurrentIndex = 0;
-            UIManager.Instance.DisableDialogueUI();
+            UIManager.Instance.DialogueManager.DisableDialogueUI();
         }
 
         public void PlayDialogue()

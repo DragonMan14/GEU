@@ -7,6 +7,10 @@ using UnityEngine.InputSystem;
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance;
+
+    public GameObject PlayerOverworld { get; private set; }
+    public GameObject PlayerCombat { get; private set; }
+
     public PlayerMovementManager PlayerMovementManager;
     public PlayerInputManager PlayerInputManager;
     public List<GameObject> interactions;
@@ -21,6 +25,10 @@ public class PlayerManager : MonoBehaviour
         {
             Instance = this;
         }
+
+        PlayerOverworld = GameObject.FindGameObjectWithTag("PlayerOverworld");
+        PlayerCombat = GameObject.FindGameObjectWithTag("PlayerCombat");
+
         interactions = new List<GameObject>();
     }
     #region TriggerRegisterer
@@ -48,4 +56,9 @@ public class PlayerManager : MonoBehaviour
         return interactions[^1].GetComponent<IInteractable>();
     }
     #endregion
+
+    public bool CollisionHasTagPlayer(Collider2D collision)
+    {
+        return collision.gameObject.CompareTag("PlayerOverworld") || collision.gameObject.CompareTag("PlayerCombat");
+    }
 }

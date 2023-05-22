@@ -13,6 +13,15 @@ TagManager:
   - DialogueOptionsMenu
   - DialogueOptionsText
   - DialogueOptionsCursor
+  - NormalAttackLeft
+  - NormalAttackRight
+  - ContinueButton
+  - PhysicalButton
+  - MagicButton
+  - ActButton
+  - FleeButton
+  - PlayerOverworld
+  - PlayerCombat
   layers:
   - Default
   - TransparentFX

@@ -7,7 +7,7 @@ using UnityEngine.Windows;
 public class PlayerInputBattleSystem : MonoBehaviour
 {
     private PlayerManager playerManager;
-    private PlayerInputActions inputActions;
+    private PlayerInputActions _inputActions;
 
     private void Start()
     {
@@ -20,13 +20,13 @@ public class PlayerInputBattleSystem : MonoBehaviour
         {
             playerManager.PlayerInputManager.PlayerInputBattleSystem = this;
         }
-        inputActions = playerManager.PlayerInputManager.InputActions;
+        _inputActions = playerManager.PlayerInputManager.InputActions;
         EnableAllInput();
     }
 
     private void OnEnable()
     {
-        if (inputActions == null) 
+        if (_inputActions == null) 
         {
             return;
         }
@@ -35,6 +35,10 @@ public class PlayerInputBattleSystem : MonoBehaviour
 
     private void OnDisable()
     {
+        if (_inputActions == null)
+        {
+            return;
+        }
         DisableAllInput();
     }
 
@@ -42,36 +46,48 @@ public class PlayerInputBattleSystem : MonoBehaviour
     {
         EnableMovement();
         EnableJump();
+        EnableNormalPhysicalAttack();
     }
 
     private void DisableAllInput()
     {
         DisableMovement();
         DisableJump();
+        DisableNormalPhysicalAttack();
     }
 
     private void EnableMovement()
     {
-        inputActions.PlayerBattleSystem.Move.performed += MovePerformed;
-        inputActions.PlayerBattleSystem.Move.canceled += MoveCanceled;
+        _inputActions.PlayerBattleSystem.Move.performed += MovePerformed;
+        _inputActions.PlayerBattleSystem.Move.canceled += MoveCanceled;
     }
 
     private void DisableMovement()
     {
-        inputActions.PlayerBattleSystem.Move.performed -= MovePerformed;
-        inputActions.PlayerBattleSystem.Move.canceled -= MoveCanceled;
+        _inputActions.PlayerBattleSystem.Move.performed -= MovePerformed;
+        _inputActions.PlayerBattleSystem.Move.canceled -= MoveCanceled;
     }
 
     public void EnableJump()
     {
-        inputActions.PlayerBattleSystem.Jump.performed += JumpPerformed;
-        inputActions.PlayerBattleSystem.Jump.canceled += JumpCanceled;
+        _inputActions.PlayerBattleSystem.Jump.performed += JumpPerformed;
+        _inputActions.PlayerBattleSystem.Jump.canceled += JumpCanceled;
     }
 
     public void DisableJump()
     {
-        inputActions.PlayerBattleSystem.Jump.performed -= JumpPerformed;
-        inputActions.PlayerBattleSystem.Jump.canceled -= JumpCanceled;
+        _inputActions.PlayerBattleSystem.Jump.performed -= JumpPerformed;
+        _inputActions.PlayerBattleSystem.Jump.canceled -= JumpCanceled;
+    }
+
+    public void EnableNormalPhysicalAttack()
+    {
+        _inputActions.PlayerBattleSystem.NormalPhysicalAttack.performed += NormalPhysicalAttackPerformed;
+    }
+
+    public void DisableNormalPhysicalAttack()
+    {
+        _inputActions.PlayerBattleSystem.NormalPhysicalAttack.performed -= NormalPhysicalAttackPerformed;
     }
     private void MovePerformed(InputAction.CallbackContext obj)
     {
@@ -102,5 +118,10 @@ public class PlayerInputBattleSystem : MonoBehaviour
     private void JumpCanceled(InputAction.CallbackContext obj)
     {
         playerManager.PlayerMovementManager.PlayerMovementBattleSystem.JumpPressed = false;
+    }
+
+    private void NormalPhysicalAttackPerformed(InputAction.CallbackContext obj)
+    {
+        playerManager.PlayerMovementManager.PlayerMovementBattleSystem.PerformNormalPhysicalAttack();
     }
 }

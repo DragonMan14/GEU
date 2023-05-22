@@ -5,11 +5,9 @@ using UnityEngine;
 public class PlayerAttributes : MonoBehaviour
 {
     [SerializeField] private float _maxHealth;
-
+    [SerializeField] private float _currentHealth;
     [SerializeField] private float _maxMana;
-
-    public float CurrentHealth { get; private set; }
-    public float CurrentMana { get; private set; }
+    [SerializeField] private float _currentMana;
 
     // Affects bonus damage for phys and magic attacks.
     public float LuckStat;
@@ -21,13 +19,26 @@ public class PlayerAttributes : MonoBehaviour
 
     private void Awake()
     {
-        CurrentHealth = _maxHealth;
-
+        _currentHealth = _maxHealth;
+        _currentMana = _maxMana;
     }
 
-    public float GetMaxHealth()
-
+    public void DrainHealth(float damage)
     {
-        return _maxHealth;
+        _currentHealth -= damage;
+        if (_currentHealth <= 0) {
+            GameOver();
+        }
+    }
+
+    public void DrainMana(float mana)
+    {
+        _currentMana -= mana;
+    }
+
+    private void GameOver()
+    {
+        print("You are dead!");
     }
 }
+

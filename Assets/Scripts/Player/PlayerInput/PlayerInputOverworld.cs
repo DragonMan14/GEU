@@ -7,7 +7,7 @@ using UnityEngine.Windows;
 public class PlayerInputOverworld : MonoBehaviour
 {
     private PlayerManager playerManager;
-    private PlayerInputActions inputActions;
+    private PlayerInputActions _inputActions;
 
     private void Start()
     {
@@ -20,13 +20,13 @@ public class PlayerInputOverworld : MonoBehaviour
         {
             playerManager.PlayerInputManager.PlayerInputOverworld = this;
         }
-        inputActions = playerManager.PlayerInputManager.InputActions;
+        _inputActions = playerManager.PlayerInputManager.InputActions;
         EnableAllInput();
     }
 
     private void OnEnable()
     {
-        if (inputActions == null) 
+        if (_inputActions == null) 
         {
             return;
         }
@@ -35,6 +35,10 @@ public class PlayerInputOverworld : MonoBehaviour
 
     private void OnDisable()
     {
+        if (_inputActions == null)
+        {
+            return;
+        }
         DisableAllInput();
     }
 
@@ -52,24 +56,24 @@ public class PlayerInputOverworld : MonoBehaviour
 
     private void EnableMovement()
     {
-        inputActions.PlayerOverworld.Move.performed += MovePerformed;
-        inputActions.PlayerOverworld.Move.canceled += MoveCanceled;
+        _inputActions.PlayerOverworld.Move.performed += MovePerformed;
+        _inputActions.PlayerOverworld.Move.canceled += MoveCanceled;
     }
 
     private void DisableMovement()
     {
-        inputActions.PlayerOverworld.Move.performed -= MovePerformed;
-        inputActions.PlayerOverworld.Move.canceled -= MoveCanceled;
+        _inputActions.PlayerOverworld.Move.performed -= MovePerformed;
+        _inputActions.PlayerOverworld.Move.canceled -= MoveCanceled;
     }
 
     public void EnableInteract()
     {
-        inputActions.PlayerOverworld.Interact.performed += InteractPerformed;
+        _inputActions.PlayerOverworld.Interact.performed += InteractPerformed;
     }
 
     public void DisableInteract()
     {
-        inputActions.PlayerOverworld.Interact.performed -= InteractPerformed;
+        _inputActions.PlayerOverworld.Interact.performed -= InteractPerformed;
     }
     private void MovePerformed(InputAction.CallbackContext obj)
     {

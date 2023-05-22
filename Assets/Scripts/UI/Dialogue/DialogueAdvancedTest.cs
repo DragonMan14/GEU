@@ -19,7 +19,7 @@ public class DialogueAdvancedTest : Interactable, IInteractable
         {
             dialogueGroup.group[currentGroup].PlayDialogue();
         }
-        else if (!UIManager.Instance.DialogueOptionsOpen)
+        else if (!UIManager.Instance.DialogueManager.DialogueOptionsOpen)
         {
             SetOptionTexts(currentGroup);
         }
@@ -34,10 +34,10 @@ public class DialogueAdvancedTest : Interactable, IInteractable
         switch(group)
         {
             case 0:
-                UIManager.Instance.EnableDialogueOptionsMenu(3);
-                UIManager.Instance.SetOptionText(0, "Cancel");
-                UIManager.Instance.SetOptionText(1, "Group1");
-                UIManager.Instance.SetOptionText(2, "Group2");
+                UIManager.Instance.DialogueManager.EnableDialogueOptionsMenu(3);
+                UIManager.Instance.DialogueManager.SetOptionText(0, "Cancel");
+                UIManager.Instance.DialogueManager.SetOptionText(1, "Group1");
+                UIManager.Instance.DialogueManager.SetOptionText(2, "Group2");
                 break;                
             default:
                 dialogueGroup.group[currentGroup].PlayDialogue();
@@ -56,16 +56,16 @@ public class DialogueAdvancedTest : Interactable, IInteractable
         switch (group)
         {
             case 0:
-                if (UIManager.Instance.CurrentOption == 0)
+                if (UIManager.Instance.DialogueManager.CurrentOption == 0)
                 {
-                    UIManager.Instance.DisableDialogueUI();
+                    UIManager.Instance.DialogueManager.DisableDialogueUI();
                     dialogueGroup.group[0].CurrentIndex = 0;
                 }
-                else if (UIManager.Instance.CurrentOption == 1)
+                else if (UIManager.Instance.DialogueManager.CurrentOption == 1)
                 {
                     SetCurrentGroupAndPlay(1);
                 }
-                else if (UIManager.Instance.CurrentOption == 2)
+                else if (UIManager.Instance.DialogueManager.CurrentOption == 2)
                 {
                     SetCurrentGroupAndPlay(2);
                 }
