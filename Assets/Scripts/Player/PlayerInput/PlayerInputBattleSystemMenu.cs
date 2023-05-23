@@ -76,8 +76,8 @@ public class PlayerInputBattleSystemMenu : MonoBehaviour
 
     private void MovementPerformed(InputAction.CallbackContext obj)
     {
-        Vector2 input = obj.ReadValue<Vector2>();
-        UIManager.Instance.UIBattleSystem.HandleBattleOptionsInput(input.x);
+        float input = obj.ReadValue<float>();
+        UIManager.Instance.UIBattleSystem.HandleBattleOptionsInput(input);
     }
 
     private void SelectionPerformed(InputAction.CallbackContext obj)

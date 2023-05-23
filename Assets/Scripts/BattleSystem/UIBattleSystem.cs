@@ -50,7 +50,7 @@ public class UIBattleSystem : MonoBehaviour
         }
     }
 
-    private void DisableBattleOptionsMenu() 
+    public void DisableBattleOptionsMenu() 
     {
         for (int option = 0; option < _options.Length; option++)
         {

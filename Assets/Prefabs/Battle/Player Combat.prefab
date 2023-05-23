@@ -274,7 +274,6 @@ GameObject:
   - component: {fileID: 795249928815047868}
   - component: {fileID: 32477172}
   - component: {fileID: 32477166}
-  - component: {fileID: 32477177}
   m_Layer: 0
   m_Name: Player Combat
   m_TagString: PlayerCombat
@@ -371,7 +370,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &2596064237443146875
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -450,18 +449,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eb38b50abcaabe845b6b9fb90fc5ba90, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &32477177
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2671027263928731592}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a6c90b78da9a741883e0b99dcc6c84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &6242610342755353755
