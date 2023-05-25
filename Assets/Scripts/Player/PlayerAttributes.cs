@@ -23,6 +23,19 @@ public class PlayerAttributes : MonoBehaviour
         _currentMana = _maxMana;
     }
 
+    private void Start()
+    {
+        PlayerManager playerManager = PlayerManager.Instance;
+        if (playerManager.PlayerAttributes != null && playerManager.PlayerAttributes != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            playerManager.PlayerAttributes = this;
+        }
+    }
+
     public void DrainHealth(float damage)
     {
         _currentHealth -= damage;

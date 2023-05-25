@@ -13,6 +13,7 @@ public class PlayerManager : MonoBehaviour
 
     public PlayerMovementManager PlayerMovementManager;
     public PlayerInputManager PlayerInputManager;
+    public PlayerAttributes PlayerAttributes;
     public List<GameObject> interactions;
 
     private void Awake()

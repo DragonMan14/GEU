@@ -17,7 +17,7 @@ public class BattleManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.G))
         {
-            print("Testing");
+            print("Testing Attack Phase");
             SetEnemies(testing);
             StartCoroutine(StartBattle());
         }
@@ -43,7 +43,8 @@ public class BattleManager : MonoBehaviour
         List<GameObject> enemies = new List<GameObject>();
         for (int i = 0; i < _enemyPrefabs.Count; i++)
         {
-            enemies.Add(Instantiate(_enemyPrefabs[i]));
+            // position is a "worry about that later"
+            enemies.Add(Instantiate(_enemyPrefabs[i], new Vector3(-5, -1, 0), Quaternion.identity));
         }
         // Perform all of their attacks
         List<Coroutine> runningCoroutines = new List<Coroutine>();
