@@ -29,14 +29,15 @@ public class PlayerMovementBattleSystem : MonoBehaviour
     private float _startingJumpHeight = float.NegativeInfinity;
     private readonly float _minJumpHeight = 1.2f;
     private readonly float _jumpBufferTime = 0.25f;
-    private int _maxJumps = 1;
+    private float _coyoteBufferTime;
+    private readonly float _maxCoyoteBufferTime = .25f;
     private int _timesJumped = 0;
+    private int _maxJumps = 1;
     // Gravity and Falling
     private readonly float _maxFallSpeed = 50f;
     private readonly float _defaultGravityScale = 1f;
     private readonly float _fallGravityMultiplier = 2f;
-    private readonly float _maxGroundedBuffer = 5f;
-    private float _groundedBuffer;
+   
 
     public float NormalPhysAttackAnimLength = 1f;
 
@@ -44,7 +45,7 @@ public class PlayerMovementBattleSystem : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
-        _groundedBuffer = 0f;
+        _coyoteBufferTime = 0f;
     }
     private void Start()
     {
@@ -65,7 +66,6 @@ public class PlayerMovementBattleSystem : MonoBehaviour
         {
             CalculateHorizontalMovement(_movementChange);
         }
-        print(_groundedBuffer);
         UpdateGrounded();
         ReduceJumpHeight();
     }
@@ -107,7 +107,7 @@ public class PlayerMovementBattleSystem : MonoBehaviour
             if (IsBufferGrounded() && _timesJumped < _maxJumps)
             {
                 _timesJumped++;
-                _groundedBuffer = float.PositiveInfinity;
+                _coyoteBufferTime = float.PositiveInfinity;
                 _startingJumpHeight = _rigidbody.position.y;
                 _rigidbody.velocity = new Vector2(_movementChange.x * _moveSpeed, _jumpSpeed);
                 yield break;
@@ -148,19 +148,19 @@ public class PlayerMovementBattleSystem : MonoBehaviour
 
     private bool IsBufferGrounded()
     {
-        return _groundedBuffer < _maxGroundedBuffer;
+        return _coyoteBufferTime < _maxCoyoteBufferTime;
     }
 
     private void UpdateGrounded()
     {
         if (!Physics2D.OverlapCircle(_groundCheck.position, 0.2f, _groundLayer))
         {
-            _groundedBuffer += Time.deltaTime;
+            _coyoteBufferTime += Time.deltaTime;
         }
         else if (_rigidbody.velocity.y == 0)
         {
             _timesJumped = 0;
-            _groundedBuffer = 0;
+            _coyoteBufferTime = 0;
         }
     }
 

@@ -82,6 +82,7 @@ public class PlayerInputBattleSystemMenu : MonoBehaviour
 
     private void SelectionPerformed(InputAction.CallbackContext obj)
     {
+        print("Selection");
         UIManager.Instance.UIBattleSystem.TestInteract();
     }
 }

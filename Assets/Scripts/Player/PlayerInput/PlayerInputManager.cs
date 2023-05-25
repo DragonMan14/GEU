@@ -84,10 +84,16 @@ public class PlayerInputManager : MonoBehaviour
 
     public void ToggleActionMap(InputActionMap actionMap)
     {
+        StartCoroutine(ToggleActionMapDelay(actionMap));
+    }
+
+    private IEnumerator ToggleActionMapDelay(InputActionMap actionMap)
+    {
         if (actionMap.enabled)
         {
-            return;
+            yield break;
         }
+        yield return new WaitForSeconds(0.1f);
         InputActions.Disable();
         actionMap.Enable();
     }

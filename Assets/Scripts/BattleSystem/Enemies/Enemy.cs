@@ -25,8 +25,9 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.G)) 
-        { 
+        if(Input.GetKeyDown(KeyCode.H)) 
+        {
+            print("test");
             StartCoroutine(StartAttackPhase());
         }
     }
