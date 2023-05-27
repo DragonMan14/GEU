@@ -24,6 +24,7 @@ public class PlayerMovementBattleSystem : MonoBehaviour
 
     [SerializeField] private Transform _groundCheck;
     [SerializeField] private LayerMask _groundLayer;
+    [SerializeField] private Vector2 _groundCheckDimensions;
     public bool JumpPressed;
     // Jumping
     private float _startingJumpHeight = float.NegativeInfinity;
@@ -66,8 +67,16 @@ public class PlayerMovementBattleSystem : MonoBehaviour
         {
             CalculateHorizontalMovement(_movementChange);
         }
-        UpdateGrounded();
+        print(_groundCheckDimensions);
+        print(IsCurrentlyGrounded());
+        UpdateCoyoteTime();
         ReduceJumpHeight();
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawCube(_groundCheck.position, _groundCheckDimensions);
     }
 
     #region Walking
@@ -104,7 +113,7 @@ public class PlayerMovementBattleSystem : MonoBehaviour
         float timer = 0f;
         while (timer < _jumpBufferTime)
         {
-            if (IsBufferGrounded() && _timesJumped < _maxJumps)
+            if (HasCoyoteTime() && _timesJumped < _maxJumps)
             {
                 _timesJumped++;
                 _coyoteBufferTime = float.PositiveInfinity;
@@ -143,17 +152,17 @@ public class PlayerMovementBattleSystem : MonoBehaviour
 
     private bool IsCurrentlyGrounded()
     {
-        return Physics2D.OverlapCircle(_groundCheck.position, 0.2f, _groundLayer);
+        return Physics2D.OverlapBox(_groundCheck.position, _groundCheckDimensions, 0, _groundLayer);
     }
 
-    private bool IsBufferGrounded()
+    private bool HasCoyoteTime()
     {
         return _coyoteBufferTime < _maxCoyoteBufferTime;
     }
 
-    private void UpdateGrounded()
+    private void UpdateCoyoteTime()
     {
-        if (!Physics2D.OverlapCircle(_groundCheck.position, 0.2f, _groundLayer))
+        if (!Physics2D.OverlapBox(_groundCheck.position, _groundCheckDimensions, 0, _groundLayer))
         {
             _coyoteBufferTime += Time.deltaTime;
         }

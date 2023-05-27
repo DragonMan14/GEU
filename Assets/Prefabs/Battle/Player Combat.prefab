@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 514082833}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Normal Attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 1084276008}
   - component: {fileID: 1084276009}
   - component: {fileID: 1084276010}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Left Attack
   m_TagString: NormalAttackLeft
   m_Icon: {fileID: 0}
@@ -157,7 +157,7 @@ GameObject:
   - component: {fileID: 1815524668}
   - component: {fileID: 1815524670}
   - component: {fileID: 1815524671}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Right Attack
   m_TagString: NormalAttackRight
   m_Icon: {fileID: 0}
@@ -274,7 +274,7 @@ GameObject:
   - component: {fileID: 795249928815047868}
   - component: {fileID: 32477172}
   - component: {fileID: 32477166}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Player Combat
   m_TagString: PlayerCombat
   m_Icon: {fileID: 0}
@@ -416,6 +416,7 @@ MonoBehaviour:
   _groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  _groundCheckDimensions: {x: 1, y: 0.1}
   JumpPressed: 0
   NormalPhysAttackAnimLength: 1
 --- !u!95 &32477172
@@ -460,10 +461,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7964650486553648914}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Ground Check
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour
@@ -18,6 +19,14 @@ public abstract class Enemy : MonoBehaviour
         minAttacksInQueue = 2;
         maxAttacksInQueue = 4;
         InitalizeAttackPool();
+    }
+
+    public void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.CompareTag("PlayerCombat"))
+        {
+            Physics2D.IgnoreCollision(this.GetComponent<Collider2D>(), collision.gameObject.GetComponent<Collider2D>());
+        }
     }
 
     public abstract void InitalizeAttackPool();
