@@ -22,11 +22,13 @@ public class PlayerMovementBattleSystem : MonoBehaviour
 
     private Vector2 _movementChange;
 
+    [Header("Ground Check")]
     [SerializeField] private Transform _groundCheck;
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private Vector2 _groundCheckDimensions;
+
+    [Header("Jumping")]
     public bool JumpPressed;
-    // Jumping
     private float _startingJumpHeight = float.NegativeInfinity;
     private readonly float _minJumpHeight = 1.2f;
     private readonly float _jumpBufferTime = 0.25f;
@@ -34,7 +36,8 @@ public class PlayerMovementBattleSystem : MonoBehaviour
     private readonly float _maxCoyoteBufferTime = .25f;
     private int _timesJumped = 0;
     private int _maxJumps = 1;
-    // Gravity and Falling
+
+    [Header("Gravity")]
     private readonly float _maxFallSpeed = 50f;
     private readonly float _defaultGravityScale = 1f;
     private readonly float _fallGravityMultiplier = 2f;
@@ -67,8 +70,6 @@ public class PlayerMovementBattleSystem : MonoBehaviour
         {
             CalculateHorizontalMovement(_movementChange);
         }
-        print(_groundCheckDimensions);
-        print(IsCurrentlyGrounded());
         UpdateCoyoteTime();
         ReduceJumpHeight();
     }
@@ -132,7 +133,7 @@ public class PlayerMovementBattleSystem : MonoBehaviour
         bool playerIsFalling = _rigidbody.velocity.y < -0f;
         bool minJumpAchieved = _rigidbody.position.y - _startingJumpHeight > _minJumpHeight;
         
-        if (IsCurrentlyGrounded())
+        if (CurrentlyGrounded())
         {
             SetGravityScale(_defaultGravityScale);
         }
@@ -150,7 +151,7 @@ public class PlayerMovementBattleSystem : MonoBehaviour
         }
     }
 
-    private bool IsCurrentlyGrounded()
+    private bool CurrentlyGrounded()
     {
         return Physics2D.OverlapBox(_groundCheck.position, _groundCheckDimensions, 0, _groundLayer);
     }

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 47696607357431422}
   - component: {fileID: 2373762093618621334}
   - component: {fileID: 7471880832761629874}
+  - component: {fileID: -8197559632907199581}
   m_Layer: 7
   m_Name: BasicSlime
   m_TagString: Untagged
@@ -99,8 +100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de86dd9af2b9d784c8a4a8ace12389f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Slimeball: {fileID: 2220529399679266263, guid: cddab4bd63065d64ba34b6b70bc945ab, type: 3}
-  yomama: {x: 200, y: 200}
+  _slimeball: {fileID: 2220529399679266263, guid: cddab4bd63065d64ba34b6b70bc945ab, type: 3}
 --- !u!61 &2373762093618621334
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -148,3 +148,24 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!95 &-8197559632907199581
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 348842150394645791}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 3824bd4c055759544a98cd2422737814, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

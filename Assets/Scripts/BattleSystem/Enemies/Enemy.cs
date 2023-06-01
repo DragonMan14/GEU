@@ -1,24 +1,43 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 
+public enum Facing
+{
+    left,
+    right
+}
+
 public abstract class Enemy : MonoBehaviour
 {
-    private List<EnemyAttack> _attackPool;
-    private Queue<EnemyAttack> _attackQueue;
-    private int minAttacksInQueue;
-    private int maxAttacksInQueue;
-    
+    public List<EnemyAttack> _attackPool;
+    public Facing Direction;
+    public bool CurrentlyAttacking;
+    public bool CanAttack;
+
+    [Header("Ground Check")]
+    public Transform _groundCheck;
+    public LayerMask _groundLayer;
+    public Vector2 _groundCheckDimensions;
+
     private void Awake()
     {
         _attackPool = new List<EnemyAttack>();
-        _attackQueue = new Queue<EnemyAttack>();
-        minAttacksInQueue = 2;
-        maxAttacksInQueue = 4;
+
         InitalizeAttackPool();
+
+        Direction = Facing.right;
+        CurrentlyAttacking = false;
+        CanAttack = true;
+    }
+
+    private void Update()
+    {
+        UpdateFacing();
     }
 
     public void OnCollisionEnter2D(Collision2D collision)
@@ -36,34 +55,48 @@ public abstract class Enemy : MonoBehaviour
         _attackPool.Add(attack);
     }
 
-    private EnemyAttack GetRandomAttack()
+    public abstract IEnumerator EnemyAI();
+
+    public void UpdateFacing()
     {
-        int random = Random.Range(0, _attackPool.Count - 1);
+        bool playerOnRight = PlayerManager.Instance.PlayerCombat.transform.position.x > this.gameObject.transform.position.x;
+        if (playerOnRight && Direction == Facing.left) {
+            FlipRotation();
+        }
+        else if (!playerOnRight && Direction == Facing.right)
+        {
+            FlipRotation();
+        }
+    }
+
+    public bool CurrentlyGrounded()
+    {
+        return Physics2D.OverlapBox(_groundCheck.position, _groundCheckDimensions, 0, _groundLayer);
+    }
+
+    public void FlipRotation()
+    {
+        if (Direction == Facing.left)
+        {
+            Direction = Facing.right;
+        }
+        else
+        {
+            Direction = Facing.left;
+        }
+        Vector3 flippedScale = this.transform.localScale;
+        flippedScale.x *= -1;
+        this.transform.localScale = flippedScale;
+    }
+
+    public virtual EnemyAttack GetRandomAttack()
+    {
+        int random = Random.Range(0, _attackPool.Count);
         return _attackPool[random];
     }
 
-    private void QueueAttacks()
+    public IEnumerator PerformRandomAttack()
     {
-        int numOfAttacks = Random.Range(minAttacksInQueue, maxAttacksInQueue);
-        for (int i = 0; i < numOfAttacks; i++)
-        {
-            _attackQueue.Enqueue(GetRandomAttack());
-        }
-    }
-
-    private IEnumerator PerformAttacks()
-    {
-        int numOfAttacks = _attackQueue.Count;
-        for (int attack = 0; attack < numOfAttacks; attack++)
-        {
-            _attackQueue.Dequeue().PerformAttack();
-            yield return new WaitForSeconds(2);
-        }
-    }
-
-    public IEnumerator StartAttackPhase()
-    {
-        QueueAttacks();
-        yield return PerformAttacks();
+        yield return GetRandomAttack().PerformAttack();
     }
 }
