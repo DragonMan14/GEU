@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 public class BasicSlime : Enemy
@@ -11,10 +12,6 @@ public class BasicSlime : Enemy
     private readonly float minEndlag = 1f;
     private readonly float maxEndlag = 2f;
 
-    private void Start()
-    {
-        StartCoroutine(EnemyAI());
-    }
 
     public override void InitalizeAttackPool()
     {
@@ -77,11 +74,24 @@ public class BasicSlime : Enemy
         {
             yield return null;
             // Shooting the ball
-            Vector3 spawnPosition = _slimeObject.transform.position + new Vector3(0.75f, 0, 0);
-            GameObject shot = Instantiate(_slimeball, spawnPosition, Quaternion.identity);
-            shot.GetComponent<SlimeShot>().Damage = this.Damage;
+            SpawnSlimeBall(_slimeScript.Direction);
             // Attack is done
             _slimeScript.CurrentlyAttacking = false;
+        }
+        private void SpawnSlimeBall(Facing direction)
+        {
+            Vector3 spawnPosition;
+            if (direction == Facing.right)
+            {
+                spawnPosition = _slimeObject.transform.position + new Vector3(0.75f, 0, 0);
+            }
+            else
+            {
+                spawnPosition = _slimeObject.transform.position + new Vector3(-0.75f, 0, 0);
+            }
+            SlimeShot shot = Instantiate(_slimeball, spawnPosition, Quaternion.identity).GetComponent<SlimeShot>();
+            shot.Damage = this.Damage;
+            shot.Pew(direction);
         }
     }
 
@@ -89,6 +99,9 @@ public class BasicSlime : Enemy
     {
         private readonly GameObject _slimeObject;
         private readonly BasicSlime _slimeScript;
+        private readonly float _minJumpDistance = 4f;
+        private readonly float _maxJumpDistanceClose = 6f;
+        private readonly float _maxJumpDistanceFar = 12f;
 
         public Jump(GameObject _basicSlime)
         {
@@ -99,46 +112,56 @@ public class BasicSlime : Enemy
         public override IEnumerator PerformAttack()
         {
             // Get distance and jump
-            float distance = PlayerManager.Instance.PlayerCombat.transform.position.x - _slimeObject.transform.position.x; // fun line
+            Vector2 distance = PlayerManager.Instance.PlayerCombat.transform.position - _slimeObject.transform.position; // fun line
             yield return StartJump(distance);
             // Attack is done
             _slimeScript.CurrentlyAttacking = false;
             print("jump");
         }
 
-        private IEnumerator StartJump(float distance)
+        private IEnumerator StartJump(Vector2 distance)
         {
-            bool isLeft = distance < 0;
-            float absoluteDistance = Mathf.Min(Mathf.Abs(distance), 10f); // Dist is player.x - slime.x, max is 6
+            bool isLeft = distance.x < 0;
+            float absoluteXDistance = Mathf.Min(Mathf.Abs(distance.x), 6f); // Dist is player.x - slime.x, max is 8
+            float absoluteYDistance = Mathf.Min(Mathf.Abs(distance.y), 6f);
             float jumpForce;
             
-            if (absoluteDistance < 2)
+            if (absoluteXDistance < 2)
             {
-                float jumpDistance = Mathf.Pow(absoluteDistance, -1f) + 2;
-                jumpForce = Mathf.Clamp(jumpDistance, 1, 6f);
+                float jumpDistance = Mathf.Pow(absoluteXDistance, -1f) + 2;
+                jumpForce = Mathf.Clamp(jumpDistance, _minJumpDistance, _maxJumpDistanceClose);
             }
             else
             {
-                float jumpDistance = Mathf.Pow(absoluteDistance, 0.85f) - (Mathf.Pow(2, 0.85f) - 0.5f);
-                jumpForce = Mathf.Clamp(jumpDistance, 1, 6);
+                float jumpDistance = Mathf.Pow(absoluteXDistance, 0.85f) - (Mathf.Pow(2, 0.85f) - 0.5f);
+                jumpForce = Mathf.Clamp(jumpDistance, _minJumpDistance, _maxJumpDistanceFar);
             }
-            jumpForce = 10;
+
+            // If there is a height difference between the player and slime, increase jump force proportional to that distance
+            if (absoluteYDistance > 1)
+            {
+                jumpForce += absoluteYDistance * 1.25f;
+            }
+
+            absoluteXDistance = Mathf.Clamp(absoluteXDistance, 0f, 6f);
+            print($"Distance: {absoluteXDistance}");
+            print($"JumpForce: {jumpForce}");
             Vector2 force;
             if (isLeft)
             {
-                force = new Vector2(-absoluteDistance, jumpForce);
+                force = new Vector2(-absoluteXDistance, jumpForce);
             }
             else
             {
-                force = new Vector2(absoluteDistance, jumpForce);
+                force = new Vector2(absoluteXDistance, jumpForce);
             }
+
             // idfk what impluse does lol :)
             _slimeObject.GetComponent<Rigidbody2D>().AddForce(force, ForceMode2D.Impulse);
             // Wait for jump to be done
             yield return null;
             while (_slimeObject.GetComponent<Rigidbody2D>().velocity.y != 0) 
             {
-                print("in loop");
                 yield return null;
             }
             // Reset the velocity

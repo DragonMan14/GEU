@@ -27,12 +27,13 @@ public abstract class Enemy : MonoBehaviour
     private void Awake()
     {
         _attackPool = new List<EnemyAttack>();
-
         InitalizeAttackPool();
 
         Direction = Facing.right;
         CurrentlyAttacking = false;
         CanAttack = true;
+
+        StartCoroutine(EnemyAI());
     }
 
     private void Update()
@@ -69,11 +70,6 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
-    public bool CurrentlyGrounded()
-    {
-        return Physics2D.OverlapBox(_groundCheck.position, _groundCheckDimensions, 0, _groundLayer);
-    }
-
     public void FlipRotation()
     {
         if (Direction == Facing.left)
@@ -87,6 +83,11 @@ public abstract class Enemy : MonoBehaviour
         Vector3 flippedScale = this.transform.localScale;
         flippedScale.x *= -1;
         this.transform.localScale = flippedScale;
+    }   
+
+    public bool CurrentlyGrounded()
+    {
+        return Physics2D.OverlapBox(_groundCheck.position, _groundCheckDimensions, 0, _groundLayer);
     }
 
     public virtual EnemyAttack GetRandomAttack()

@@ -11,7 +11,6 @@ public class SlimeShot : MonoBehaviour
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
-        Pew();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -23,8 +22,15 @@ public class SlimeShot : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-    public void Pew()
+    public void Pew(Facing direction)
     {
-        _rigidbody.velocity = new Vector2(5, 0);
+        if (direction == Facing.right)
+        {
+            _rigidbody.velocity = new Vector2(5, 0);
+        }
+        else
+        {
+            _rigidbody.velocity = new Vector2(-5, 0);
+        }
     }
 }
