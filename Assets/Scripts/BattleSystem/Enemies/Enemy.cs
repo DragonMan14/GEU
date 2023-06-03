@@ -18,6 +18,8 @@ public abstract class Enemy : MonoBehaviour
     public Facing Direction;
     public bool CurrentlyAttacking;
     public bool CanAttack;
+    public float BaseKnockbackForceMultiplier = 1f;
+    public float BaseKnockbackDamage = 5f;
 
     [Header("Ground Check")]
     public Transform _groundCheck;
@@ -26,6 +28,8 @@ public abstract class Enemy : MonoBehaviour
 
     private void Awake()
     {
+        Physics2D.IgnoreCollision(this.GetComponent<Collider2D>(), PlayerManager.Instance.PlayerCombat.gameObject.GetComponent<Collider2D>());
+
         _attackPool = new List<EnemyAttack>();
         InitalizeAttackPool();
 
@@ -41,13 +45,8 @@ public abstract class Enemy : MonoBehaviour
         UpdateFacing();
     }
 
-    public void OnCollisionEnter2D(Collision2D collision)
-    {
-        if(collision.gameObject.CompareTag("PlayerCombat"))
-        {
-            Physics2D.IgnoreCollision(this.GetComponent<Collider2D>(), collision.gameObject.GetComponent<Collider2D>());
-        }
-    }
+    #region Attacks
+    public abstract IEnumerator EnemyAI();
 
     public abstract void InitalizeAttackPool();
 
@@ -55,13 +54,26 @@ public abstract class Enemy : MonoBehaviour
     {
         _attackPool.Add(attack);
     }
+    public virtual EnemyAttack GetRandomAttack()
+    {
+        int random = Random.Range(0, _attackPool.Count);
+        return _attackPool[random];
+    }
 
-    public abstract IEnumerator EnemyAI();
+    public IEnumerator PerformRandomAttack()
+    {
+        yield return GetRandomAttack().PerformAttack();
+    }
+
+    #endregion
+
+    #region Physics
 
     public void UpdateFacing()
     {
         bool playerOnRight = PlayerManager.Instance.PlayerCombat.transform.position.x > this.gameObject.transform.position.x;
-        if (playerOnRight && Direction == Facing.left) {
+        if (playerOnRight && Direction == Facing.left)
+        {
             FlipRotation();
         }
         else if (!playerOnRight && Direction == Facing.right)
@@ -83,21 +95,19 @@ public abstract class Enemy : MonoBehaviour
         Vector3 flippedScale = this.transform.localScale;
         flippedScale.x *= -1;
         this.transform.localScale = flippedScale;
-    }   
+    }
 
     public bool CurrentlyGrounded()
     {
         return Physics2D.OverlapBox(_groundCheck.position, _groundCheckDimensions, 0, _groundLayer);
     }
 
-    public virtual EnemyAttack GetRandomAttack()
+    // Basic knockback collision damage
+    public virtual void OnCollisionEnter2D(Collision2D collision)
     {
-        int random = Random.Range(0, _attackPool.Count);
-        return _attackPool[random];
+        PlayerManager.Instance.PlayerAttributes.DrainHealth(BaseKnockbackDamage);
+        StartCoroutine(PlayerManager.Instance.PlayerMovementManager.PlayerMovementBattleSystem.ApplyKnockback(Direction, BaseKnockbackForceMultiplier));
     }
 
-    public IEnumerator PerformRandomAttack()
-    {
-        yield return GetRandomAttack().PerformAttack();
-    }
+    #endregion
 }

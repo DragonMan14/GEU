@@ -21,6 +21,11 @@ public class PlayerMovementBattleSystem : MonoBehaviour
     private Rigidbody2D _rigidbody;
 
     private Vector2 _movementChange;
+   
+    [Header("Knockback")]
+    private readonly Vector2 _baseKnockback = new Vector2(10f, 5f);
+    private readonly float _knockbackDuration = 0.25f;
+    private float _currentKnockbackTime;
 
     [Header("Ground Check")]
     [SerializeField] private Transform _groundCheck;
@@ -79,6 +84,30 @@ public class PlayerMovementBattleSystem : MonoBehaviour
         Gizmos.color = Color.blue;
         Gizmos.DrawCube(_groundCheck.position, _groundCheckDimensions);
     }
+
+    #region OnGettingAttacked
+    public IEnumerator ApplyKnockback(Facing direction, float force)
+    {
+        Vector2 finalKnockback = _baseKnockback;
+        if (direction == Facing.right)
+        {
+            finalKnockback.x *= force;
+        }
+        else
+        {
+            finalKnockback.x *= -force;
+        }
+        PlayerManager.Instance.PlayerInputManager.SetInputState(InputState.Staggered);
+        _currentKnockbackTime = 0;
+        while (_currentKnockbackTime < _knockbackDuration)
+        {
+            _rigidbody.velocity = finalKnockback;
+            _currentKnockbackTime += Time.deltaTime;
+            yield return null;
+        }
+        PlayerManager.Instance.PlayerInputManager.SetInputState(InputState.BattleSystem);
+    }
+    #endregion
 
     #region Walking
     public void CalculateHorizontalMovement(Vector2 change)

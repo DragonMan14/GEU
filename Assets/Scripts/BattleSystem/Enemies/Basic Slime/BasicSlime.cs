@@ -12,7 +12,6 @@ public class BasicSlime : Enemy
     private readonly float minEndlag = 1f;
     private readonly float maxEndlag = 2f;
 
-
     public override void InitalizeAttackPool()
     {
         // 0 = Slimeball
@@ -116,7 +115,6 @@ public class BasicSlime : Enemy
             yield return StartJump(distance);
             // Attack is done
             _slimeScript.CurrentlyAttacking = false;
-            print("jump");
         }
 
         private IEnumerator StartJump(Vector2 distance)
@@ -144,8 +142,6 @@ public class BasicSlime : Enemy
             }
 
             absoluteXDistance = Mathf.Clamp(absoluteXDistance, 0f, 6f);
-            print($"Distance: {absoluteXDistance}");
-            print($"JumpForce: {jumpForce}");
             Vector2 force;
             if (isLeft)
             {
@@ -169,13 +165,5 @@ public class BasicSlime : Enemy
         }
     }
 
-    public class Attack3 : EnemyAttack
-    {
-        public override IEnumerator PerformAttack()
-        {
-            print("attack3");
-            yield return null;
-        }
-    }
     #endregion
 }

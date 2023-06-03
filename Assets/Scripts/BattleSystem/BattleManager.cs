@@ -57,7 +57,5 @@ public class BattleManager : MonoBehaviour
         {
             yield return coroutine;
         }
-        // After all attacks are performed, set the state back to battle system menu
-        PlayerManager.Instance.PlayerInputManager.SetInputState(InputState.BatleSystemMenu);
     }
 }

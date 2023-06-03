@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1227136681}
   - component: {fileID: 1227136683}
   - component: {fileID: 1227136682}
-  - component: {fileID: 996169550}
   m_Layer: 0
   m_Name: UI Managers
   m_TagString: Untagged
@@ -47,7 +46,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DialogueManager: {fileID: 0}
-  UIBattleSystem: {fileID: 0}
 --- !u!114 &1227136682
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,64 +58,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a7205c7e211f0043aee6da4b725fb92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &996169550
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1227136680}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a5f0bef3b0560d4c9ecdc808f9eb705, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!1 &1920759271
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1920759272}
-  - component: {fileID: 1920759273}
-  m_Layer: 0
-  m_Name: Battle Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1920759272
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1920759271}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6840180691524647303}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1920759273
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1920759271}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 848c7a3cb41f6c0458ac2b4c732c60dd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  testing:
-  - {fileID: 348842150394645791, guid: 56cb9039f6b39ab4984c47f2bb97951b, type: 3}
 --- !u!1 &6840180691524647301
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,7 +90,6 @@ Transform:
   - {fileID: 6840180692955247364}
   - {fileID: 6840180692736038187}
   - {fileID: 1227136681}
-  - {fileID: 1920759272}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -493,7 +432,6 @@ GameObject:
   - component: {fileID: 528949481373132458}
   - component: {fileID: 1229168028}
   - component: {fileID: 2145816940}
-  - component: {fileID: 1151488860}
   m_Layer: 0
   m_Name: Player Managers
   m_TagString: Untagged
@@ -530,6 +468,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerMovementManager: {fileID: 0}
   PlayerInputManager: {fileID: 0}
+  PlayerAttributes: {fileID: 0}
   interactions: []
 --- !u!114 &6840180692736038164
 MonoBehaviour:
@@ -560,7 +499,6 @@ MonoBehaviour:
   PlayerInputOverworld: {fileID: 0}
   PlayerInputBattleSystem: {fileID: 0}
   PlayerInputDialogue: {fileID: 0}
-  PlayerInputBattleSystemMenu: {fileID: 0}
   PreviousState: 0
   CurrentState: 2
 --- !u!114 &1229168028
@@ -594,18 +532,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6e859cbc4c780014dad10ae476639517, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1151488860
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6840180692736038184}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a6c90b78da9a741883e0b99dcc6c84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &6840180692955247365

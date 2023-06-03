@@ -8,7 +8,7 @@ public enum InputState
 {
     Openworld,
     BattleSystem,
-    BatleSystemMenu,
+    Staggered,
     Dialogue
 }
 
@@ -19,7 +19,6 @@ public class PlayerInputManager : MonoBehaviour
     public PlayerInputOverworld PlayerInputOverworld;
     public PlayerInputBattleSystem PlayerInputBattleSystem;
     public PlayerInputDialogue PlayerInputDialogue;
-    public PlayerInputBattleSystemMenu PlayerInputBattleSystemMenu;
 
     public InputState PreviousState;
     public InputState CurrentState;
@@ -74,11 +73,9 @@ public class PlayerInputManager : MonoBehaviour
         {
             ToggleActionMap(InputActions.Dialogue);
         }
-        else if (state == InputState.BatleSystemMenu)
+        else if (state == InputState.Staggered)
         {
-            playerManager.PlayerOverworld.SetActive(false);
-            playerManager.PlayerCombat.SetActive(false);
-            ToggleActionMap(InputActions.PlayerBattleSystemMenu);
+            InputActions.Disable();
         }
     }
 

@@ -856,76 +856,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
-        },
-        {
-            ""name"": ""PlayerBattleSystemMenu"",
-            ""id"": ""dff76668-dd5e-4655-8442-da378654fd9c"",
-            ""actions"": [
-                {
-                    ""name"": ""Move"",
-                    ""type"": ""Value"",
-                    ""id"": ""da6f2942-30a6-4bdc-a282-2e506ee4b2a4"",
-                    ""expectedControlType"": ""Axis"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""Select"",
-                    ""type"": ""Button"",
-                    ""id"": ""fc4baef9-7cb0-4023-8f3c-c0a6bf3832ac"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": ""Arrow Keys"",
-                    ""id"": ""c68a9e34-929d-436f-b7c2-16dc6e0e6441"",
-                    ""path"": ""1DAxis"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""Negative"",
-                    ""id"": ""649acff4-2728-4d34-ac75-c49a70f2264d"",
-                    ""path"": ""<Keyboard>/leftArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""Positive"",
-                    ""id"": ""69472bc0-4ac5-4f3c-bea5-f1cb3d10f0d2"",
-                    ""path"": ""<Keyboard>/rightArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""752c1da2-c4eb-4e78-9081-cf6efbc51b33"",
-                    ""path"": ""<Keyboard>/z"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Select"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
         }
     ],
     ""controlSchemes"": [
@@ -1016,10 +946,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
-        // PlayerBattleSystemMenu
-        m_PlayerBattleSystemMenu = asset.FindActionMap("PlayerBattleSystemMenu", throwIfNotFound: true);
-        m_PlayerBattleSystemMenu_Move = m_PlayerBattleSystemMenu.FindAction("Move", throwIfNotFound: true);
-        m_PlayerBattleSystemMenu_Select = m_PlayerBattleSystemMenu.FindAction("Select", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1365,60 +1291,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         }
     }
     public UIActions @UI => new UIActions(this);
-
-    // PlayerBattleSystemMenu
-    private readonly InputActionMap m_PlayerBattleSystemMenu;
-    private List<IPlayerBattleSystemMenuActions> m_PlayerBattleSystemMenuActionsCallbackInterfaces = new List<IPlayerBattleSystemMenuActions>();
-    private readonly InputAction m_PlayerBattleSystemMenu_Move;
-    private readonly InputAction m_PlayerBattleSystemMenu_Select;
-    public struct PlayerBattleSystemMenuActions
-    {
-        private @PlayerInputActions m_Wrapper;
-        public PlayerBattleSystemMenuActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Move => m_Wrapper.m_PlayerBattleSystemMenu_Move;
-        public InputAction @Select => m_Wrapper.m_PlayerBattleSystemMenu_Select;
-        public InputActionMap Get() { return m_Wrapper.m_PlayerBattleSystemMenu; }
-        public void Enable() { Get().Enable(); }
-        public void Disable() { Get().Disable(); }
-        public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(PlayerBattleSystemMenuActions set) { return set.Get(); }
-        public void AddCallbacks(IPlayerBattleSystemMenuActions instance)
-        {
-            if (instance == null || m_Wrapper.m_PlayerBattleSystemMenuActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_PlayerBattleSystemMenuActionsCallbackInterfaces.Add(instance);
-            @Move.started += instance.OnMove;
-            @Move.performed += instance.OnMove;
-            @Move.canceled += instance.OnMove;
-            @Select.started += instance.OnSelect;
-            @Select.performed += instance.OnSelect;
-            @Select.canceled += instance.OnSelect;
-        }
-
-        private void UnregisterCallbacks(IPlayerBattleSystemMenuActions instance)
-        {
-            @Move.started -= instance.OnMove;
-            @Move.performed -= instance.OnMove;
-            @Move.canceled -= instance.OnMove;
-            @Select.started -= instance.OnSelect;
-            @Select.performed -= instance.OnSelect;
-            @Select.canceled -= instance.OnSelect;
-        }
-
-        public void RemoveCallbacks(IPlayerBattleSystemMenuActions instance)
-        {
-            if (m_Wrapper.m_PlayerBattleSystemMenuActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        public void SetCallbacks(IPlayerBattleSystemMenuActions instance)
-        {
-            foreach (var item in m_Wrapper.m_PlayerBattleSystemMenuActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_PlayerBattleSystemMenuActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    public PlayerBattleSystemMenuActions @PlayerBattleSystemMenu => new PlayerBattleSystemMenuActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -1492,10 +1364,5 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnRightClick(InputAction.CallbackContext context);
         void OnTrackedDevicePosition(InputAction.CallbackContext context);
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
-    }
-    public interface IPlayerBattleSystemMenuActions
-    {
-        void OnMove(InputAction.CallbackContext context);
-        void OnSelect(InputAction.CallbackContext context);
     }
 }
