@@ -8,7 +8,6 @@ public enum InputState
 {
     Openworld,
     BattleSystem,
-    Staggered,
     Dialogue
 }
 
@@ -72,10 +71,6 @@ public class PlayerInputManager : MonoBehaviour
         else if (state == InputState.Dialogue)
         {
             ToggleActionMap(InputActions.Dialogue);
-        }
-        else if (state == InputState.Staggered)
-        {
-            InputActions.Disable();
         }
     }
 

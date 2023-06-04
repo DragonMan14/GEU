@@ -41,10 +41,11 @@ GameObject:
   m_Component:
   - component: {fileID: 348842150394645784}
   - component: {fileID: 348842150394645785}
-  - component: {fileID: 47696607357431422}
   - component: {fileID: 2373762093618621334}
   - component: {fileID: 7471880832761629874}
+  - component: {fileID: 3729976693826047799}
   - component: {fileID: -8197559632907199581}
+  - component: {fileID: 2897057098524664557}
   m_Layer: 7
   m_Name: BasicSlime
   m_TagString: Untagged
@@ -120,27 +121,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &47696607357431422
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 348842150394645791}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de86dd9af2b9d784c8a4a8ace12389f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Direction: 0
-  CurrentlyAttacking: 0
-  CanAttack: 0
-  _groundCheck: {fileID: 146151705}
-  _groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  _groundCheckDimensions: {x: 1.3, y: 0.1}
-  _slimeball: {fileID: 2220529399679266263, guid: cddab4bd63065d64ba34b6b70bc945ab, type: 3}
 --- !u!61 &2373762093618621334
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -188,6 +168,32 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!61 &3729976693826047799
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 348842150394645791}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.008324385, y: 0.015863657}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.52, y: 0.57}
+    oldSize: {x: 2, y: 2}
+    newSize: {x: 2, y: 2}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1.3118882, y: 0.8093338}
+  m_EdgeRadius: 0
 --- !u!95 &-8197559632907199581
 Animator:
   serializedVersion: 5
@@ -209,3 +215,27 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2897057098524664557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 348842150394645791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d28fc6bc97670894d98f313babfc49fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Direction: 1
+  CurrentlyAttacking: 0
+  CanAttack: 0
+  BaseKnockbackForceMultiplier: 1
+  BaseKnockbackDamage: 5
+  _groundCheck: {fileID: 146151705}
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  _groundCheckDimensions: {x: 1.3, y: 0.1}
+  _slimeball: {fileID: 2220529399679266263, guid: cddab4bd63065d64ba34b6b70bc945ab, type: 3}
+  Direction: 1

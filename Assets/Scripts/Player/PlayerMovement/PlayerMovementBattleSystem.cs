@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -12,6 +13,13 @@ public enum BattleSystemDirection
 
 public class PlayerMovementBattleSystem : MonoBehaviour
 {
+    private enum PlayerState
+    {
+        Moving, // Walking or jumping
+        Staggered
+    }
+    private PlayerState _currentState;
+
     private PlayerManager playerManager;
 
     private Animator _animator;
@@ -23,7 +31,8 @@ public class PlayerMovementBattleSystem : MonoBehaviour
     private Vector2 _movementChange;
    
     [Header("Knockback")]
-    private readonly Vector2 _baseKnockback = new Vector2(10f, 5f);
+    private readonly Vector2 _baseKnockbackForce = new Vector2(10f, 5f);
+    private Vector2 finalKnockbackForce;
     private readonly float _knockbackDuration = 0.25f;
     private float _currentKnockbackTime;
 
@@ -40,7 +49,7 @@ public class PlayerMovementBattleSystem : MonoBehaviour
     private float _coyoteBufferTime;
     private readonly float _maxCoyoteBufferTime = .25f;
     private int _timesJumped = 0;
-    private int _maxJumps = 1;
+    private readonly int _maxJumps = 1;
 
     [Header("Gravity")]
     private readonly float _maxFallSpeed = 50f;
@@ -71,12 +80,12 @@ public class PlayerMovementBattleSystem : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (playerManager.PlayerInputManager.CurrentState == InputState.BattleSystem)
-        {
-            CalculateHorizontalMovement(_movementChange);
-        }
-        UpdateCoyoteTime();
-        ReduceJumpHeight();
+        FixedUpdateCurrentState();
+    }
+
+    private void Update()
+    {
+        UpdateCurrentState();        
     }
 
     private void OnDrawGizmos()
@@ -86,26 +95,18 @@ public class PlayerMovementBattleSystem : MonoBehaviour
     }
 
     #region OnGettingAttacked
-    public IEnumerator ApplyKnockback(Facing direction, float force)
+    public void ApplyKnockback(Facing direction, float force)
     {
-        Vector2 finalKnockback = _baseKnockback;
+        finalKnockbackForce = _baseKnockbackForce;
         if (direction == Facing.right)
         {
-            finalKnockback.x *= force;
+            finalKnockbackForce.x *= force;
         }
         else
         {
-            finalKnockback.x *= -force;
+            finalKnockbackForce.x *= -force;
         }
-        PlayerManager.Instance.PlayerInputManager.SetInputState(InputState.Staggered);
-        _currentKnockbackTime = 0;
-        while (_currentKnockbackTime < _knockbackDuration)
-        {
-            _rigidbody.velocity = finalKnockback;
-            _currentKnockbackTime += Time.deltaTime;
-            yield return null;
-        }
-        PlayerManager.Instance.PlayerInputManager.SetInputState(InputState.BattleSystem);
+        SetState(PlayerState.Staggered);
     }
     #endregion
 
@@ -220,6 +221,123 @@ public class PlayerMovementBattleSystem : MonoBehaviour
         _animator.SetBool("NormalPhysicalAttacking", true);
         yield return new WaitForSeconds(NormalPhysAttackAnimLength);
         _animator.SetBool("NormalPhysicalAttacking", false);
+    }
+    #endregion
+
+    #region MovingState
+
+    private void EnterMovingState()
+    {
+
+    }
+
+    private void UpdateMovingState()
+    {
+
+    }
+
+    private void FixedUpdateMovingState()
+    {
+        if (playerManager.PlayerInputManager.CurrentState == InputState.BattleSystem)
+        {
+            CalculateHorizontalMovement(_movementChange);
+        }
+        UpdateCoyoteTime();
+        ReduceJumpHeight();
+    }
+
+    private void ExitMovingState()
+    {
+
+    }
+
+    #endregion
+
+    #region StaggeredState
+
+    private void EnterStaggeredState()
+    {
+        _currentKnockbackTime = 0;
+    }
+
+    private void UpdateStaggeredState()
+    {
+
+    }
+
+    private void FixedUpdateStaggeredState()
+    {
+        if (_currentKnockbackTime < _knockbackDuration)
+        {
+            _rigidbody.velocity = finalKnockbackForce;
+            _currentKnockbackTime += Time.deltaTime;
+        }
+        else
+        {
+            SetState(PlayerState.Moving);
+        }
+    }
+
+    private void ExitStaggeredState()
+    {
+
+    }
+
+    #endregion
+
+    #region StateMachine
+
+    private void SetState(PlayerState newState)
+    {
+        // Exit the current state
+        switch (_currentState)
+        {
+            case PlayerState.Moving:
+                ExitMovingState();
+                break;
+            case PlayerState.Staggered:
+                ExitStaggeredState();
+                break;
+        }
+        // Enter the new state
+        switch (newState)
+        {
+            case PlayerState.Moving:
+                EnterMovingState();
+                break;
+            case PlayerState.Staggered:
+                EnterStaggeredState();
+                break;
+        }
+        _currentState = newState;
+    }
+
+    private void UpdateCurrentState()
+    {
+        // Exit the current state
+        switch (_currentState)
+        {
+            case PlayerState.Moving:
+                UpdateMovingState();
+                break;
+            case PlayerState.Staggered:
+                UpdateStaggeredState();
+                break;
+        }
+    }
+
+    private void FixedUpdateCurrentState()
+    {
+        // Exit the current state
+        switch (_currentState)
+        {
+            case PlayerState.Moving:
+                FixedUpdateMovingState();
+                break;
+            case PlayerState.Staggered:
+                FixedUpdateStaggeredState();
+                break;
+        }
     }
     #endregion
 }

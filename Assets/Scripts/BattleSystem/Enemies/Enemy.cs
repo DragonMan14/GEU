@@ -28,7 +28,7 @@ public abstract class Enemy : MonoBehaviour
 
     private void Awake()
     {
-        Physics2D.IgnoreCollision(this.GetComponent<Collider2D>(), PlayerManager.Instance.PlayerCombat.gameObject.GetComponent<Collider2D>());
+        Physics2D.IgnoreCollision(this.GetComponent<Collider2D>(), PlayerManager.Instance.PlayerCombat.GetComponent<Collider2D>());
 
         _attackPool = new List<EnemyAttack>();
         InitalizeAttackPool();
@@ -102,11 +102,21 @@ public abstract class Enemy : MonoBehaviour
         return Physics2D.OverlapBox(_groundCheck.position, _groundCheckDimensions, 0, _groundLayer);
     }
 
-    // Basic knockback collision damage
-    public virtual void OnCollisionEnter2D(Collision2D collision)
+    private void OnDrawGizmos()
     {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawCube(_groundCheck.position, _groundCheckDimensions);
+    }
+
+    // Basic knockback collision damage
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (!collision.gameObject.CompareTag("PlayerCombat"))
+        {
+            return;
+        }
         PlayerManager.Instance.PlayerAttributes.DrainHealth(BaseKnockbackDamage);
-        StartCoroutine(PlayerManager.Instance.PlayerMovementManager.PlayerMovementBattleSystem.ApplyKnockback(Direction, BaseKnockbackForceMultiplier));
+        PlayerManager.Instance.PlayerMovementManager.PlayerMovementBattleSystem.ApplyKnockback(Direction, BaseKnockbackForceMultiplier);
     }
 
     #endregion

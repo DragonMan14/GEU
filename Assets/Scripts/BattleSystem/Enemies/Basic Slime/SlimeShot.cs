@@ -18,6 +18,16 @@ public class SlimeShot : MonoBehaviour
         if (other.CompareTag("PlayerCombat"))
         {
             PlayerManager.Instance.PlayerAttributes.DrainHealth(Damage);
+            Facing knockbackDirection;
+            if (PlayerManager.Instance.PlayerCombat.transform.position.x > this.transform.position.x)
+            {
+                knockbackDirection = Facing.right;
+            }
+            else
+            {
+                knockbackDirection = Facing.left;
+            }
+            PlayerManager.Instance.PlayerMovementManager.PlayerMovementBattleSystem.ApplyKnockback(knockbackDirection, 1f);
         }
         Destroy(this.gameObject);
     }

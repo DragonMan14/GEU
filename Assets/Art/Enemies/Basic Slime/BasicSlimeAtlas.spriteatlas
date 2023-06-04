@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BasicSlimeAtlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 0
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: a6e4785ab6e629f49a59b4a72a4f543e, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 694277497, guid: 8130bc60dda7ed44d9ad35ed44033540, type: 3}
+  - {fileID: -1021348151, guid: 8130bc60dda7ed44d9ad35ed44033540, type: 3}
+  - {fileID: -1728849282, guid: 8130bc60dda7ed44d9ad35ed44033540, type: 3}
+  - {fileID: -1769784928, guid: 8130bc60dda7ed44d9ad35ed44033540, type: 3}
+  - {fileID: 928253621, guid: ef63640367805564e8b49fbf1c2056ab, type: 3}
+  - {fileID: -251359092, guid: ef63640367805564e8b49fbf1c2056ab, type: 3}
+  - {fileID: -326384642, guid: ef63640367805564e8b49fbf1c2056ab, type: 3}
+  - {fileID: -1365677667, guid: ef63640367805564e8b49fbf1c2056ab, type: 3}
+  - {fileID: -340280884, guid: faabb9d54f9fdc24dbb2253867ddcec1, type: 3}
+  - {fileID: 1506970569, guid: faabb9d54f9fdc24dbb2253867ddcec1, type: 3}
+  - {fileID: -872009428, guid: cef4c6b67b17691428cfe0ef5a3a9cd0, type: 3}
+  - {fileID: 2130071614, guid: cef4c6b67b17691428cfe0ef5a3a9cd0, type: 3}
+  - {fileID: 1489217512, guid: cef4c6b67b17691428cfe0ef5a3a9cd0, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - BasicSlime_Shooting_2
+  - BasicSlime_Shooting_3
+  - BasicSlime_Shooting_0
+  - BasicSlime_Shooting_1
+  - BasicSlime_Jumping_1
+  - BasicSlime_Jumping_0
+  - BasicSlime_Jumping_3
+  - BasicSlime_Jumping_2
+  - BasicSlime_Neutral_0
+  - BasicSlime_Neutral_1
+  - BasicSlime_Angry_2
+  - BasicSlime_Angry_0
+  - BasicSlime_Angry_1
+  m_RenderDataMap: {}
+  m_Tag: BasicSlimeAtlas
+  m_IsVariant: 0

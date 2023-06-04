@@ -14,9 +14,9 @@ public class BasicSlime : Enemy
 
     public override void InitalizeAttackPool()
     {
-        // 0 = Slimeball
+        // 0 == Slimeball
         AddAttackToPool(new SlimeShotAttack(this.gameObject));
-        // 1 = Jump
+        // 1 == Jump
         AddAttackToPool(new Jump(this.gameObject));
        // AddAttackToPool(new Attack3());
     }
@@ -48,7 +48,7 @@ public class BasicSlime : Enemy
         int attackNum = UnityEngine.Random.Range(0, _attackPool.Count);
         return _attackPool[attackNum];
     }
-
+    
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;
