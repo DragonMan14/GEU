@@ -14,10 +14,13 @@ public enum Facing
 
 public abstract class Enemy : MonoBehaviour
 {
-    public List<EnemyAttack> _attackPool;
     public Facing Direction;
-    public bool CurrentlyAttacking;
-    public bool CanAttack;
+
+    [Header("Components")]
+    public Rigidbody2D Rigidbody;
+    public Animator Animator;
+
+    [Header("Knockback")]
     public float BaseKnockbackForceMultiplier = 1f;
     public float BaseKnockbackDamage = 5f;
 
@@ -29,43 +32,19 @@ public abstract class Enemy : MonoBehaviour
     private void Awake()
     {
         Physics2D.IgnoreCollision(this.GetComponent<Collider2D>(), PlayerManager.Instance.PlayerCombat.GetComponent<Collider2D>());
-
-        _attackPool = new List<EnemyAttack>();
-        InitalizeAttackPool();
-
         Direction = Facing.right;
-        CurrentlyAttacking = false;
-        CanAttack = true;
 
-        StartCoroutine(EnemyAI());
+        Rigidbody = GetComponent<Rigidbody2D>();
+        Animator = GetComponent<Animator>();
     }
 
     private void Update()
     {
         UpdateFacing();
+        UpdateCurrentState();
     }
 
-    #region Attacks
-    public abstract IEnumerator EnemyAI();
-
-    public abstract void InitalizeAttackPool();
-
-    public void AddAttackToPool(EnemyAttack attack)
-    {
-        _attackPool.Add(attack);
-    }
-    public virtual EnemyAttack GetRandomAttack()
-    {
-        int random = Random.Range(0, _attackPool.Count);
-        return _attackPool[random];
-    }
-
-    public IEnumerator PerformRandomAttack()
-    {
-        yield return GetRandomAttack().PerformAttack();
-    }
-
-    #endregion
+    public abstract void UpdateCurrentState();
 
     #region Physics
 

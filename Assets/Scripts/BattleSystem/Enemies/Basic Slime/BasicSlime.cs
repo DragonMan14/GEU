@@ -1,167 +1,223 @@
-using JetBrains.Annotations;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using UnityEditor.ShaderGraph.Internal;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class BasicSlime : Enemy
 {
+    private enum State
+    {
+        Idle,
+        Jumping,
+        SlimeShot,
+    }
+
+    private State _currentState;
+
+    [Header("Idle")]
+    private readonly float _minEndlag = 1f;
+    private readonly float _maxEndlag = 2f;
+    private float _currentEndlagDuration;
+    private float _currentEndlagTimer = 0f;
+
+    [Header("Jumping")]
+    private readonly float _minJumpDistance = 4f;
+    private readonly float _maxJumpDistanceClose = 6f;
+    private readonly float _maxJumpDistanceFar = 12f;
+
+    [Header("SlimeShot")]
     [SerializeField] private GameObject _slimeball;
-    private readonly float minEndlag = 1f;
-    private readonly float maxEndlag = 2f;
 
-    public override void InitalizeAttackPool()
+    private void Start()
     {
-        // 0 == Slimeball
-        AddAttackToPool(new SlimeShotAttack(this.gameObject));
-        // 1 == Jump
-        AddAttackToPool(new Jump(this.gameObject));
-       // AddAttackToPool(new Attack3());
+        SetState(State.Idle);
     }
 
-    public override IEnumerator EnemyAI()
+    #region Idle
+
+    private void EnterIdleState()
     {
-        while (true)
+        // Randomize the endlag duration
+        _currentEndlagDuration = Random.Range(_minEndlag, _maxEndlag);
+    }
+
+    private void UpdateIdleState()
+    {
+        // Increase the endlag timer
+        _currentEndlagTimer += Time.deltaTime;
+        // If the timer ends, switch the state
+        if (_currentEndlagTimer >= _currentEndlagDuration)
         {
-            if (!CanAttack || CurrentlyAttacking)
+            int newState = Random.Range(0, 2);
+            switch(newState)
             {
-                yield return null;
-                continue;
+                case 0:
+                    SetState(State.Jumping); 
+                    break;
+                case 1:
+                    SetState(State.SlimeShot);
+                    break;
             }
-            float endlag = UnityEngine.Random.Range(minEndlag, maxEndlag);
-            yield return new WaitForSeconds(endlag);
-            CurrentlyAttacking = true;
-            yield return PerformRandomAttack();
-        }
-    }
-
-    public override EnemyAttack GetRandomAttack()
-    {
-        // If in the air, slime can only do slimeshot
-        if (!CurrentlyGrounded())
-        {
-            return _attackPool[0];
-        }
-        // Else randomly choose between slimeshot and jump
-        int attackNum = UnityEngine.Random.Range(0, _attackPool.Count);
-        return _attackPool[attackNum];
-    }
-    
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.blue;
-        Gizmos.DrawCube(_groundCheck.position, _groundCheckDimensions);
-    }
-
-    #region Attacks
-    private class SlimeShotAttack : EnemyAttack
-    {
-        private readonly GameObject _slimeObject;
-        private readonly BasicSlime _slimeScript;
-        private readonly GameObject _slimeball;
-        
-        public SlimeShotAttack(GameObject _basicSlime)
-        {
-            this._slimeObject = _basicSlime;
-            this._slimeScript = _basicSlime.GetComponent<BasicSlime>();
-            this._slimeball = _basicSlime.GetComponent<BasicSlime>()._slimeball;
-            this.Damage = 5f;
-        }
-        public override IEnumerator PerformAttack()
-        {
-            yield return null;
-            // Shooting the ball
-            SpawnSlimeBall(_slimeScript.Direction);
-            // Attack is done
-            _slimeScript.CurrentlyAttacking = false;
-        }
-        private void SpawnSlimeBall(Facing direction)
-        {
-            Vector3 spawnPosition;
-            if (direction == Facing.right)
-            {
-                spawnPosition = _slimeObject.transform.position + new Vector3(0.75f, 0, 0);
-            }
-            else
-            {
-                spawnPosition = _slimeObject.transform.position + new Vector3(-0.75f, 0, 0);
-            }
-            SlimeShot shot = Instantiate(_slimeball, spawnPosition, Quaternion.identity).GetComponent<SlimeShot>();
-            shot.Damage = this.Damage;
-            shot.Pew(direction);
         }
     }
 
-    private class Jump : EnemyAttack
+    private void ExitIdleState()
     {
-        private readonly GameObject _slimeObject;
-        private readonly BasicSlime _slimeScript;
-        private readonly float _minJumpDistance = 4f;
-        private readonly float _maxJumpDistanceClose = 6f;
-        private readonly float _maxJumpDistanceFar = 12f;
+        // Reset the endlag timer
+        _currentEndlagTimer = 0;
+    }
 
-        public Jump(GameObject _basicSlime)
+    #endregion
+
+    #region SlimeShot
+    private void EnterSlimeShotState()
+    {
+        // Play animation
+        Animator.SetTrigger("Shoot");
+    }
+
+    private void UpdateSlimeShotState()
+    {
+        // If the animation is still playing, wait
+        if (Animator.GetCurrentAnimatorStateInfo(0).IsName("BasicSlime_Shooting"))
         {
-            this._slimeObject = _basicSlime;
-            this._slimeScript = _basicSlime.GetComponent<BasicSlime>();
+            print("in anim");
+            return;
+        }
+        // After the animation, instantiate the slimeshot
+        InstantiateSlimeShot();
+        // Set the state back to idle
+        SetState(State.Idle);
+    }
+
+    private void ExitSlimeShotState()
+    {
+
+    }
+
+    private void InstantiateSlimeShot()
+    {
+        Vector3 spawnPosition;
+        if (Direction == Facing.right)
+        {
+            spawnPosition = this.transform.position + new Vector3(0.75f, 0, 0);
+        }
+        else
+        {
+            spawnPosition = this.transform.position + new Vector3(-0.75f, 0, 0);
+        }
+        SlimeShot shot = Instantiate(_slimeball, spawnPosition, Quaternion.identity).GetComponent<SlimeShot>();
+        shot.Damage = 5f;
+        shot.Pew(Direction);
+    }
+
+    #endregion
+
+    #region Jumping
+
+    private void EnterJumpingState()
+    {
+        // Play animation
+        Animator.SetTrigger("Jump");
+        // Get the distance between the player and the slime
+        Vector2 distance = PlayerManager.Instance.PlayerCombat.transform.position - this.transform.position; // fun line
+        float absoluteXDistance = Mathf.Min(Mathf.Abs(distance.x), 6f); // XDist is player.x - slime.x, max is 6
+        float absoluteYDistance = Mathf.Min(Mathf.Abs(distance.y), 6f); // Same with YDist
+        float jumpForce;
+
+        if (absoluteXDistance < 2)
+        {
+            float jumpDistance = Mathf.Pow(absoluteXDistance, -1f) + 2;
+            jumpForce = Mathf.Clamp(jumpDistance, _minJumpDistance, _maxJumpDistanceClose);
+        }
+        else
+        {
+            float jumpDistance = Mathf.Pow(absoluteXDistance, 0.85f) - (Mathf.Pow(2, 0.85f) - 0.5f);
+            jumpForce = Mathf.Clamp(jumpDistance, _minJumpDistance, _maxJumpDistanceFar);
         }
 
-        public override IEnumerator PerformAttack()
+        // If there is a height difference between the player and slime, increase jump force proportional to that distance
+        if (absoluteYDistance > 1)
         {
-            // Get distance and jump
-            Vector2 distance = PlayerManager.Instance.PlayerCombat.transform.position - _slimeObject.transform.position; // fun line
-            yield return StartJump(distance);
-            // Attack is done
-            _slimeScript.CurrentlyAttacking = false;
+            jumpForce += absoluteYDistance * 1.25f;
         }
 
-        private IEnumerator StartJump(Vector2 distance)
+        // Uses the jump force and x distance to calculate the velocity
+        Vector2 velocityForce;
+        if (Direction == Facing.left)
         {
-            bool isLeft = distance.x < 0;
-            float absoluteXDistance = Mathf.Min(Mathf.Abs(distance.x), 6f); // Dist is player.x - slime.x, max is 8
-            float absoluteYDistance = Mathf.Min(Mathf.Abs(distance.y), 6f);
-            float jumpForce;
-            
-            if (absoluteXDistance < 2)
-            {
-                float jumpDistance = Mathf.Pow(absoluteXDistance, -1f) + 2;
-                jumpForce = Mathf.Clamp(jumpDistance, _minJumpDistance, _maxJumpDistanceClose);
-            }
-            else
-            {
-                float jumpDistance = Mathf.Pow(absoluteXDistance, 0.85f) - (Mathf.Pow(2, 0.85f) - 0.5f);
-                jumpForce = Mathf.Clamp(jumpDistance, _minJumpDistance, _maxJumpDistanceFar);
-            }
+            velocityForce = new Vector2(-absoluteXDistance, jumpForce);
+        }
+        else
+        {
+            velocityForce = new Vector2(absoluteXDistance, jumpForce);
+        }
 
-            // If there is a height difference between the player and slime, increase jump force proportional to that distance
-            if (absoluteYDistance > 1)
-            {
-                jumpForce += absoluteYDistance * 1.25f;
-            }
+        Rigidbody.AddForce(velocityForce, ForceMode2D.Impulse); // Makes the slime jump
 
-            absoluteXDistance = Mathf.Clamp(absoluteXDistance, 0f, 6f);
-            Vector2 force;
-            if (isLeft)
-            {
-                force = new Vector2(-absoluteXDistance, jumpForce);
-            }
-            else
-            {
-                force = new Vector2(absoluteXDistance, jumpForce);
-            }
+    }
 
-            // idfk what impluse does lol :)
-            _slimeObject.GetComponent<Rigidbody2D>().AddForce(force, ForceMode2D.Impulse);
-            // Wait for jump to be done
-            yield return null;
-            while (_slimeObject.GetComponent<Rigidbody2D>().velocity.y != 0) 
-            {
-                yield return null;
-            }
-            // Reset the velocity
-            _slimeObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+    private void UpdateJumpingState()
+    {
+        // When the slime lands on the ground, set it's state back to idle
+        if (CurrentlyGrounded() && Rigidbody.velocity.y == 0)
+        {
+            SetState(State.Idle);
+        }
+    }
+
+    private void ExitJumpingState()
+    {
+        // When the slime lands, set the velocity to zero
+        Rigidbody.velocity = Vector2.zero;
+    }
+    #endregion
+
+    #region StateMachine
+    private void SetState(State newState)
+    {
+        // Exit the current state
+        switch (_currentState)
+        {
+            case State.Idle:
+                ExitIdleState();
+                break;
+            case State.Jumping:
+                ExitJumpingState();
+                break;
+            case State.SlimeShot:
+                ExitSlimeShotState();
+                break;
+        }
+        // Enter the new state
+        switch (newState)
+        {
+            case State.Idle:
+                EnterIdleState();
+                break;
+            case State.Jumping:
+                EnterJumpingState();
+                break;
+            case State.SlimeShot:
+                EnterSlimeShotState();
+                break;
+        }
+        _currentState = newState;
+    }
+
+    public override void UpdateCurrentState()
+    {
+        switch (_currentState)
+        {
+            case State.Idle:
+                UpdateIdleState();
+                break;
+            case State.Jumping:
+                UpdateJumpingState();
+                break;
+            case State.SlimeShot:
+                UpdateSlimeShotState();
+                break;
         }
     }
 

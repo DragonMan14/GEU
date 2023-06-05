@@ -110,7 +110,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -1447900725, guid: cf88960c431f4f542863b97ebd625d81, type: 3}
+  m_Sprite: {fileID: -340280884, guid: faabb9d54f9fdc24dbb2253867ddcec1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -204,7 +204,7 @@ Animator:
   m_GameObject: {fileID: 348842150394645791}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 3824bd4c055759544a98cd2422737814, type: 2}
+  m_Controller: {fileID: 9100000, guid: e203a5e9db39b2140ae61fd65884f6da, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -228,8 +228,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Direction: 1
-  CurrentlyAttacking: 0
-  CanAttack: 0
+  Rigidbody: {fileID: 0}
+  Animator: {fileID: 0}
   BaseKnockbackForceMultiplier: 1
   BaseKnockbackDamage: 5
   _groundCheck: {fileID: 146151705}
@@ -238,4 +238,3 @@ MonoBehaviour:
     m_Bits: 64
   _groundCheckDimensions: {x: 1.3, y: 0.1}
   _slimeball: {fileID: 2220529399679266263, guid: cddab4bd63065d64ba34b6b70bc945ab, type: 3}
-  Direction: 1
