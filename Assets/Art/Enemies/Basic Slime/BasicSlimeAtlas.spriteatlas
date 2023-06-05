@@ -54,6 +54,11 @@ SpriteAtlas:
   - {fileID: -1021348151, guid: 8130bc60dda7ed44d9ad35ed44033540, type: 3}
   - {fileID: -1728849282, guid: 8130bc60dda7ed44d9ad35ed44033540, type: 3}
   - {fileID: -1769784928, guid: 8130bc60dda7ed44d9ad35ed44033540, type: 3}
+  - {fileID: -700537307, guid: 02106f70fc5ed324ca4f3913dae1f5e1, type: 3}
+  - {fileID: -104541621, guid: 02106f70fc5ed324ca4f3913dae1f5e1, type: 3}
+  - {fileID: -1530044434, guid: 02106f70fc5ed324ca4f3913dae1f5e1, type: 3}
+  - {fileID: -1893359219, guid: 02106f70fc5ed324ca4f3913dae1f5e1, type: 3}
+  - {fileID: -197417056, guid: 02106f70fc5ed324ca4f3913dae1f5e1, type: 3}
   - {fileID: 928253621, guid: ef63640367805564e8b49fbf1c2056ab, type: 3}
   - {fileID: -251359092, guid: ef63640367805564e8b49fbf1c2056ab, type: 3}
   - {fileID: -326384642, guid: ef63640367805564e8b49fbf1c2056ab, type: 3}
@@ -63,11 +68,18 @@ SpriteAtlas:
   - {fileID: -872009428, guid: cef4c6b67b17691428cfe0ef5a3a9cd0, type: 3}
   - {fileID: 2130071614, guid: cef4c6b67b17691428cfe0ef5a3a9cd0, type: 3}
   - {fileID: 1489217512, guid: cef4c6b67b17691428cfe0ef5a3a9cd0, type: 3}
+  - {fileID: 718671231, guid: 308756ff61e80fb4287a1769a9eb8b1a, type: 3}
+  - {fileID: 358698807, guid: 308756ff61e80fb4287a1769a9eb8b1a, type: 3}
   m_PackedSpriteNamesToIndex:
   - BasicSlime_Shooting_2
   - BasicSlime_Shooting_3
   - BasicSlime_Shooting_0
   - BasicSlime_Shooting_1
+  - SlimeShot_Collision_1
+  - SlimeShot_Collision_0
+  - SlimeShot_Collision_3
+  - SlimeShot_Collision_2
+  - SlimeShot_Collision_4
   - BasicSlime_Jumping_1
   - BasicSlime_Jumping_0
   - BasicSlime_Jumping_3
@@ -77,6 +89,8 @@ SpriteAtlas:
   - BasicSlime_Angry_2
   - BasicSlime_Angry_0
   - BasicSlime_Angry_1
+  - SlimeShot_Flying_0
+  - SlimeShot_Flying_1
   m_RenderDataMap: {}
   m_Tag: BasicSlimeAtlas
   m_IsVariant: 0

@@ -13,6 +13,9 @@ public class BasicSlime : Enemy
     }
 
     private State _currentState;
+    private State _lastAttack;
+    private int _consecutiveSameAttackCounter;
+    private int _maxStall;
 
     [Header("Idle")]
     private readonly float _minEndlag = 1f;
@@ -48,13 +51,28 @@ public class BasicSlime : Enemy
         // If the timer ends, switch the state
         if (_currentEndlagTimer >= _currentEndlagDuration)
         {
-            int newState = Random.Range(0, 2);
+            // 1 == Jump, 2 == Slimeshot
+            int newState = Random.Range(1, 3);
+
+            if (((int)_lastAttack) != newState)
+            {
+                _consecutiveSameAttackCounter = 1;
+            }
+            else if ((int)_lastAttack == newState && _consecutiveSameAttackCounter < _maxStall)
+            {
+                _consecutiveSameAttackCounter++;
+            } 
+            else
+            {
+                newState = newState == 1 ? 2 : 1;
+            }
+
             switch(newState)
             {
-                case 0:
+                case 1:
                     SetState(State.Jumping); 
                     break;
-                case 1:
+                case 2:
                     SetState(State.SlimeShot);
                     break;
             }
@@ -81,11 +99,8 @@ public class BasicSlime : Enemy
         // If the animation is still playing, wait
         if (Animator.GetCurrentAnimatorStateInfo(0).IsName("BasicSlime_Shooting"))
         {
-            print("in anim");
             return;
         }
-        // After the animation, instantiate the slimeshot
-        InstantiateSlimeShot();
         // Set the state back to idle
         SetState(State.Idle);
     }
@@ -100,11 +115,11 @@ public class BasicSlime : Enemy
         Vector3 spawnPosition;
         if (Direction == Facing.right)
         {
-            spawnPosition = this.transform.position + new Vector3(0.75f, 0, 0);
+            spawnPosition = this.transform.position + new Vector3(0.60f, 0, 0);
         }
         else
         {
-            spawnPosition = this.transform.position + new Vector3(-0.75f, 0, 0);
+            spawnPosition = this.transform.position + new Vector3(-0.60f, 0, 0);
         }
         SlimeShot shot = Instantiate(_slimeball, spawnPosition, Quaternion.identity).GetComponent<SlimeShot>();
         shot.Damage = 5f;
@@ -168,6 +183,7 @@ public class BasicSlime : Enemy
 
     private void ExitJumpingState()
     {
+        Animator.SetTrigger("Landing");
         // When the slime lands, set the velocity to zero
         Rigidbody.velocity = Vector2.zero;
     }
@@ -202,6 +218,7 @@ public class BasicSlime : Enemy
                 EnterSlimeShotState();
                 break;
         }
+        _lastAttack = _currentState;
         _currentState = newState;
     }
 

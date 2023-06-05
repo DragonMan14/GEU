@@ -500,7 +500,7 @@ MonoBehaviour:
   PlayerInputBattleSystem: {fileID: 0}
   PlayerInputDialogue: {fileID: 0}
   PreviousState: 0
-  CurrentState: 2
+  CurrentState: 1
 --- !u!114 &1229168028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -514,7 +514,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _maxHealth: 50
-  _currentHealth: 0
+  _currentHealth: 50
   _maxMana: 0
   _currentMana: 0
   LuckStat: 0

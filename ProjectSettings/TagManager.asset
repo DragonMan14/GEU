@@ -59,3 +59,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: EnemyBelowEnviornment
+    uniqueID: 3648296125
+    locked: 0
+  - name: Enviornment
+    uniqueID: 3870458353
+    locked: 0
+  - name: EnemyAboveEnviornment
+    uniqueID: 2416464521
+    locked: 0
+  - name: Enemy
+    uniqueID: 243972603
+    locked: 0
+  - name: Player
+    uniqueID: 54940303
+    locked: 0
