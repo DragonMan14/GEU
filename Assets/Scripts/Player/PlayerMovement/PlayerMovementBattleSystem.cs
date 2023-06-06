@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public enum BattleSystemDirection
 {
@@ -22,13 +24,20 @@ public class PlayerMovementBattleSystem : MonoBehaviour
 
     private PlayerManager playerManager;
 
-    private Animator _animator;
-    public BattleSystemDirection CurrentDirection = BattleSystemDirection.left;
-    [SerializeField] private float _moveSpeed;
-    [SerializeField] private float _jumpSpeed;
+    [Header("Components")]
     private Rigidbody2D _rigidbody;
+    private Animator _animator;
 
-    private Vector2 _movementChange;
+    [Header("General")]
+    private List<string> _statusEffectSources;
+
+    [Header("Walking")]
+    public BattleSystemDirection CurrentDirection = BattleSystemDirection.left;
+    [SerializeField] private float _baseMoveSpeed; // Base speed no changes
+    private float _moveSpeedFlatChange; // A flat change in move speed
+    private float _moveSpeedMultiplier; 
+    private float _moveSpeedExplicitlySet; // If this value is set, use this for speed, else calculate speed using the flat change and multiplier
+    private Vector2 _movementChange; // Detects player input for what direction the player should move
    
     [Header("Knockback")]
     private readonly Vector2 _baseKnockbackForce = new Vector2(10f, 5f);
@@ -42,6 +51,10 @@ public class PlayerMovementBattleSystem : MonoBehaviour
     [SerializeField] private Vector2 _groundCheckDimensions;
 
     [Header("Jumping")]
+    [SerializeField] private float _baseJumpSpeed;
+    private float _jumpSpeedFlatChange;
+    private float _jumpSpeedMultiplier;
+    private float _jumpSpeedExplicitlySet; // If this value is set, use this for jump speed, else calculate speed using the flat change and multiplier
     public bool JumpPressed;
     private float _startingJumpHeight = float.NegativeInfinity;
     private readonly float _minJumpHeight = 1.2f;
@@ -63,6 +76,16 @@ public class PlayerMovementBattleSystem : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
+
+        _statusEffectSources = new List<string>();
+
+        _moveSpeedFlatChange = 0f;
+        _moveSpeedMultiplier = 1f;
+        _moveSpeedExplicitlySet = float.NegativeInfinity;
+
+        _jumpSpeedFlatChange = 0f;
+        _jumpSpeedMultiplier = 1f;
+        _jumpSpeedExplicitlySet = float.NegativeInfinity;
         _coyoteBufferTime = 0f;
     }
     private void Start()
@@ -94,6 +117,26 @@ public class PlayerMovementBattleSystem : MonoBehaviour
         Gizmos.DrawCube(_groundCheck.position, _groundCheckDimensions);
     }
 
+    public void AddStatusEffectSource(string effectName)
+    {
+        _statusEffectSources.Add(effectName);
+    }
+
+    public void RemoveStatusEffectSource(string effectName)
+    {
+        _statusEffectSources.Remove(effectName);
+    }
+
+    public bool HasMoreThanOneStatusEffectSource(string effectName)
+    {
+        return _statusEffectSources.Count(name => name.Equals(effectName)) > 1;
+    }
+
+    public bool HasStatusEffectSource(string effectName)
+    {
+        return _statusEffectSources.Contains(effectName);
+    }
+
     #region OnGettingAttacked
     public void ApplyKnockback(Facing direction, float force)
     {
@@ -113,7 +156,7 @@ public class PlayerMovementBattleSystem : MonoBehaviour
     #region Walking
     public void CalculateHorizontalMovement(Vector2 change)
     {
-        _rigidbody.velocity = new Vector2(change.x * _moveSpeed, _rigidbody.velocity.y);
+        _rigidbody.velocity = new Vector2(change.x * CalculateMoveSpeed(), _rigidbody.velocity.y);
         if (change.x < 0)
         {
             CurrentDirection = BattleSystemDirection.left;
@@ -131,6 +174,34 @@ public class PlayerMovementBattleSystem : MonoBehaviour
     {
         _movementChange.x = change.x;
     }
+
+    public void AdjustMovementSpeedFlatChange(float change)
+    {
+        _moveSpeedFlatChange += change;
+    }
+
+    public void AdjustMovementSpeedMultiplier(float multiplier)
+    {
+        _moveSpeedMultiplier += multiplier;
+    }
+    
+    public void SetMovementSpeedExplicitly(float speed)
+    {
+        _moveSpeedExplicitlySet = speed;
+    }
+
+    public void ResetExplicitMovementSpeed()
+    {
+        _moveSpeedExplicitlySet = float.NegativeInfinity;
+    }
+
+    public float CalculateMoveSpeed()
+    {
+        // If explicit speed is not 0, that is the speed, else calculate it using the formula
+        float speed = _moveSpeedExplicitlySet != float.NegativeInfinity ? _moveSpeedExplicitlySet : (_baseMoveSpeed + _moveSpeedFlatChange) * _moveSpeedMultiplier;
+        return speed;
+    }
+
     #endregion
 
     #region Jumping
@@ -149,7 +220,7 @@ public class PlayerMovementBattleSystem : MonoBehaviour
                 _timesJumped++;
                 _coyoteBufferTime = float.PositiveInfinity;
                 _startingJumpHeight = _rigidbody.position.y;
-                _rigidbody.velocity = new Vector2(_movementChange.x * _moveSpeed, _jumpSpeed);
+                _rigidbody.velocity = new Vector2(_movementChange.x * CalculateMoveSpeed(), CalculateJumpSpeed());
                 yield break;
             }
             timer += Time.deltaTime;
@@ -179,6 +250,33 @@ public class PlayerMovementBattleSystem : MonoBehaviour
             SetGravityScale(_defaultGravityScale * _fallGravityMultiplier);
             _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Mathf.Max(_rigidbody.velocity.y, -_maxFallSpeed));
         }
+    }
+
+    public void AdjustJumpSpeedFlatChange(float change)
+    {
+        _jumpSpeedFlatChange += change;
+    }
+
+    public void AdjustJumpSpeedMultiplier(float multiplier)
+    {
+        _jumpSpeedMultiplier += multiplier;
+    }
+
+    public void SetJumpSpeedExplicitly(float speed)
+    {
+        _jumpSpeedExplicitlySet = speed;
+    }
+
+    public void ResetExplicitJumpSpeed()
+    {
+        _jumpSpeedExplicitlySet = float.NegativeInfinity;
+    }
+
+    public float CalculateJumpSpeed()
+    {
+        // If explicit speed is not 0, that is the speed, else calculate it using the formula
+        float speed = _jumpSpeedExplicitlySet != float.NegativeInfinity ? _jumpSpeedExplicitlySet : (_baseJumpSpeed + _jumpSpeedFlatChange) * _jumpSpeedMultiplier;
+        return speed;
     }
 
     private bool CurrentlyGrounded()

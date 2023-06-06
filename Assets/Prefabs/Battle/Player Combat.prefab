@@ -336,8 +336,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 54940303
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -410,13 +410,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentDirection: 0
-  _moveSpeed: 5
-  _jumpSpeed: 10
+  _baseMoveSpeed: 5
   _groundCheck: {fileID: 7964650486553648914}
   _groundLayer:
     serializedVersion: 2
     m_Bits: 64
   _groundCheckDimensions: {x: 1, y: 0.1}
+  _baseJumpSpeed: 10
   JumpPressed: 0
   NormalPhysAttackAnimLength: 1
 --- !u!95 &32477172

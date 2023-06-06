@@ -63,6 +63,7 @@ SpriteAtlas:
   - {fileID: -251359092, guid: ef63640367805564e8b49fbf1c2056ab, type: 3}
   - {fileID: -326384642, guid: ef63640367805564e8b49fbf1c2056ab, type: 3}
   - {fileID: -1365677667, guid: ef63640367805564e8b49fbf1c2056ab, type: 3}
+  - {fileID: 21300000, guid: bb4e5143511b82f4bb1b90f94bc5be5b, type: 3}
   - {fileID: -340280884, guid: faabb9d54f9fdc24dbb2253867ddcec1, type: 3}
   - {fileID: 1506970569, guid: faabb9d54f9fdc24dbb2253867ddcec1, type: 3}
   - {fileID: -872009428, guid: cef4c6b67b17691428cfe0ef5a3a9cd0, type: 3}
@@ -84,6 +85,7 @@ SpriteAtlas:
   - BasicSlime_Jumping_0
   - BasicSlime_Jumping_3
   - BasicSlime_Jumping_2
+  - SlimeResidue
   - BasicSlime_Neutral_0
   - BasicSlime_Neutral_1
   - BasicSlime_Angry_2

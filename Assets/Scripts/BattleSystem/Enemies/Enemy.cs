@@ -19,15 +19,16 @@ public abstract class Enemy : MonoBehaviour
     [Header("Components")]
     public Rigidbody2D Rigidbody;
     public Animator Animator;
+    public SpriteRenderer SpriteRenderer;
 
     [Header("Knockback")]
     public float BaseKnockbackForceMultiplier = 1f;
     public float BaseKnockbackDamage = 5f;
 
     [Header("Ground Check")]
-    public Transform _groundCheck;
-    public LayerMask _groundLayer;
-    public Vector2 _groundCheckDimensions;
+    public Transform GroundCheck;
+    public LayerMask GroundLayer;
+    public Vector2 GroundCheckDimensions;
 
     private void Awake()
     {
@@ -36,9 +37,10 @@ public abstract class Enemy : MonoBehaviour
 
         Rigidbody = GetComponent<Rigidbody2D>();
         Animator = GetComponent<Animator>();
+        SpriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    private void Update()
+    public virtual void Update()
     {
         UpdateFacing();
         UpdateCurrentState();
@@ -78,13 +80,13 @@ public abstract class Enemy : MonoBehaviour
 
     public bool CurrentlyGrounded()
     {
-        return Physics2D.OverlapBox(_groundCheck.position, _groundCheckDimensions, 0, _groundLayer);
+        return Physics2D.OverlapBox(GroundCheck.position, GroundCheckDimensions, 0, GroundLayer);
     }
 
-    private void OnDrawGizmos()
+    public virtual void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;
-        Gizmos.DrawCube(_groundCheck.position, _groundCheckDimensions);
+        Gizmos.DrawCube(GroundCheck.position, GroundCheckDimensions);
     }
 
     // Basic knockback collision damage

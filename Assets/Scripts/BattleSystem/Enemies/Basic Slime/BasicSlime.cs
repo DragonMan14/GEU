@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Unity.Burst;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering.LookDev;
 
 public class BasicSlime : Enemy
 {
@@ -13,9 +16,6 @@ public class BasicSlime : Enemy
     }
 
     private State _currentState;
-    private State _lastAttack;
-    private int _consecutiveSameAttackCounter;
-    private int _maxStall;
 
     [Header("Idle")]
     private readonly float _minEndlag = 1f;
@@ -31,9 +31,103 @@ public class BasicSlime : Enemy
     [Header("SlimeShot")]
     [SerializeField] private GameObject _slimeball;
 
+    [Header("SlimeResidue")]
+    [SerializeField] private GameObject _slimeResidue;
+    [SerializeField] private GameObject _slimeResidueSpriteMask;
+    private readonly float leftEdgeOffset = -0.665f;
+    private readonly float rightEdgeOffset = 0.6475f;
+
     private void Start()
     {
         SetState(State.Idle);
+    }
+
+    public override void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            InstantiateSlimeResidue();
+        }
+    }
+
+    private void InstantiateSlimeResidue()
+    {
+        // Spawn residue underneath slime
+        Instantiate(_slimeResidue, GroundCheck.position, Quaternion.identity);
+        // Get the left bottom edge of the slime and the right bottom edge of the slime
+        Vector2 leftEdge = new Vector2(this.transform.position.x + leftEdgeOffset, GroundCheck.position.y);
+        // List of tuples to store raycast, (x offset and hit ground or not)
+        List<(float, bool)> groundChecks = new List<(float, bool)> ();
+        // Do raycasts starting from the left ending at the right
+        for (float xOffset = 0; xOffset < rightEdgeOffset - leftEdgeOffset; xOffset += 0.1f)
+        {
+            float raycastXCoordinate = leftEdge.x + xOffset;
+            Vector2 raycastPoint = new Vector2(raycastXCoordinate, leftEdge.y);
+            RaycastHit2D raycastGroundCheck = Physics2D.Raycast(raycastPoint, Vector2.down, 5f, GroundLayer);
+            //bool hitGround = raycastGroundCheck.distance < _groundCheckDimensions.y ? true : false;
+            bool hitGround;
+            if (raycastGroundCheck.distance < 0.1f)
+            {
+                hitGround = true;
+            }
+            else
+            {
+                hitGround = false;
+            }
+            // Note down the sections where ground ends and ground starts
+            groundChecks.Add(new(raycastXCoordinate, hitGround));
+            Debug.DrawRay(raycastPoint, Vector2.down);
+        }
+        // In between the sections where the ground starts and ends
+        // Spawn in a sprite mask with of that size with a box collider
+        (float, bool) startingGroundCheck = groundChecks[0];
+        foreach ((float, bool) groundCheck in groundChecks)
+        {
+            // If the starting ground check and the new ground both hit the ground or both haven't hit ground, continue
+            if (startingGroundCheck.Item2 == groundCheck.Item2)
+            {
+                continue;
+            }
+            else if (startingGroundCheck.Item2)
+            {
+                // If the starting ground check hit ground and the new one didn't, spawn a sprite mask
+                print("end detected");
+                //Spawn it centered between starting ground check and new ground check
+                float distance = groundCheck.Item1 - startingGroundCheck.Item1;
+                Vector2 spawnPosition = new Vector2(leftEdgeOffset + startingGroundCheck.Item1 + distance / 2, GroundCheck.position.y);
+                GameObject spriteMask = Instantiate(_slimeResidueSpriteMask, spawnPosition, Quaternion.identity);
+                // Set the scale to be the distance between the two groundchecks
+                spriteMask.transform.localScale = new Vector2(distance, 1f);
+                // Update starting ground check to the new ground check
+                startingGroundCheck = groundCheck;
+            }
+            else if (!startingGroundCheck.Item2)
+            {
+                // If the starting ground check didn't hit ground and the new one did, update starting ground check
+                startingGroundCheck = groundCheck;
+            }
+        }
+        // If the starting ground is still touching the ground, you need to draw the sprite mask from starting ground to the last ground check
+        if (startingGroundCheck.Item2)
+        {
+            print("last spawn");
+            float distance = groundChecks[groundChecks.Count - 1].Item1 - startingGroundCheck.Item1;
+            Vector2 spawnPosition = new Vector2(leftEdgeOffset + startingGroundCheck.Item1 + distance / 2, GroundCheck.position.y);
+            print($"Spawn: {spawnPosition.x}");
+            GameObject spriteMask = Instantiate(_slimeResidueSpriteMask, spawnPosition, Quaternion.identity);
+            // Set the scale to be the distance between the two groundchecks
+            spriteMask.transform.localScale = new Vector2(distance, 1f);
+        }
+
+        // If starting ground is still the first item in ground checks, every raycast hit the ground
+        if (startingGroundCheck.Item2 && startingGroundCheck.Equals(groundChecks[0]))
+        {
+            // Spawn the sprite mask to cover the entire slime residue
+            float distance = rightEdgeOffset - leftEdgeOffset;
+            Vector2 spawnPosition = new Vector2(this.transform.position.x, GroundCheck.position.y);
+            Instantiate(_slimeResidueSpriteMask, spawnPosition, Quaternion.identity);
+        }
+                    
     }
 
     #region Idle
@@ -51,28 +145,13 @@ public class BasicSlime : Enemy
         // If the timer ends, switch the state
         if (_currentEndlagTimer >= _currentEndlagDuration)
         {
-            // 1 == Jump, 2 == Slimeshot
-            int newState = Random.Range(1, 3);
-
-            if (((int)_lastAttack) != newState)
-            {
-                _consecutiveSameAttackCounter = 1;
-            }
-            else if ((int)_lastAttack == newState && _consecutiveSameAttackCounter < _maxStall)
-            {
-                _consecutiveSameAttackCounter++;
-            } 
-            else
-            {
-                newState = newState == 1 ? 2 : 1;
-            }
-
+            int newState = Random.Range(0, 2);
             switch(newState)
             {
-                case 1:
+                case 0:
                     SetState(State.Jumping); 
                     break;
-                case 2:
+                case 1:
                     SetState(State.SlimeShot);
                     break;
             }
@@ -101,6 +180,8 @@ public class BasicSlime : Enemy
         {
             return;
         }
+        // After the animation, instantiate the slimeshot
+        InstantiateSlimeShot();
         // Set the state back to idle
         SetState(State.Idle);
     }
@@ -115,11 +196,11 @@ public class BasicSlime : Enemy
         Vector3 spawnPosition;
         if (Direction == Facing.right)
         {
-            spawnPosition = this.transform.position + new Vector3(0.60f, 0, 0);
+            spawnPosition = this.transform.position + new Vector3(0.75f, 0, 0);
         }
         else
-        {
-            spawnPosition = this.transform.position + new Vector3(-0.60f, 0, 0);
+        { 
+            spawnPosition = this.transform.position + new Vector3(-0.75f, 0, 0);
         }
         SlimeShot shot = Instantiate(_slimeball, spawnPosition, Quaternion.identity).GetComponent<SlimeShot>();
         shot.Damage = 5f;
@@ -186,7 +267,9 @@ public class BasicSlime : Enemy
         Animator.SetTrigger("Landing");
         // When the slime lands, set the velocity to zero
         Rigidbody.velocity = Vector2.zero;
+        InstantiateSlimeResidue();
     }
+
     #endregion
 
     #region StateMachine
@@ -218,7 +301,6 @@ public class BasicSlime : Enemy
                 EnterSlimeShotState();
                 break;
         }
-        _lastAttack = _currentState;
         _currentState = newState;
     }
 
