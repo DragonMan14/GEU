@@ -11,7 +11,9 @@ GameObject:
   - component: {fileID: 5051766509157524999}
   - component: {fileID: 5051766509157524998}
   - component: {fileID: 5051766509157524997}
-  m_Layer: 0
+  - component: {fileID: 8086613765759511468}
+  - component: {fileID: 2717989345202325364}
+  m_Layer: 8
   m_Name: SlimeResidueSpriteMask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74,7 +76,7 @@ SpriteMask:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: bb4e5143511b82f4bb1b90f94bc5be5b, type: 3}
+  m_Sprite: {fileID: 1553605003, guid: 530e1c9ae9f6c5f46ab0f4f47487fcd6, type: 3}
   m_MaskAlphaCutoff: 0.2
   m_FrontSortingLayerID: 0
   m_BackSortingLayerID: 0
@@ -110,3 +112,30 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.2179701, y: 0.49571353}
   m_EdgeRadius: 0
+--- !u!114 &8086613765759511468
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5051766509157524996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6d94e78178df32449e859a90d546c83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerSpeedMultiplier: -0.5
+  _explicitJumpSpeed: 1
+--- !u!114 &2717989345202325364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5051766509157524996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ad59c15979f42d4eb6917091d832d3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _aliveTime: 9

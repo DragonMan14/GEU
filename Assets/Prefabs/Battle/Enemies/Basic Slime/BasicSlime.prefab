@@ -238,6 +238,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   GroundCheckDimensions: {x: 1.3, y: 0.1}
+  _attackRange: 10
   _slimeball: {fileID: 2220529399679266263, guid: cddab4bd63065d64ba34b6b70bc945ab, type: 3}
   _slimeResidue: {fileID: 1187381510554858559, guid: 7f556f173cf83b545bd9bf84c945a427, type: 3}
   _slimeResidueSpriteMask: {fileID: 5051766509157524996, guid: 4b1276f72b8326a47a0792aa9ceb3a26, type: 3}

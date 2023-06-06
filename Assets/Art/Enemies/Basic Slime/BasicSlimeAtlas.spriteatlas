@@ -63,12 +63,19 @@ SpriteAtlas:
   - {fileID: -251359092, guid: ef63640367805564e8b49fbf1c2056ab, type: 3}
   - {fileID: -326384642, guid: ef63640367805564e8b49fbf1c2056ab, type: 3}
   - {fileID: -1365677667, guid: ef63640367805564e8b49fbf1c2056ab, type: 3}
-  - {fileID: 21300000, guid: bb4e5143511b82f4bb1b90f94bc5be5b, type: 3}
   - {fileID: -340280884, guid: faabb9d54f9fdc24dbb2253867ddcec1, type: 3}
   - {fileID: 1506970569, guid: faabb9d54f9fdc24dbb2253867ddcec1, type: 3}
   - {fileID: -872009428, guid: cef4c6b67b17691428cfe0ef5a3a9cd0, type: 3}
   - {fileID: 2130071614, guid: cef4c6b67b17691428cfe0ef5a3a9cd0, type: 3}
   - {fileID: 1489217512, guid: cef4c6b67b17691428cfe0ef5a3a9cd0, type: 3}
+  - {fileID: 1169654438, guid: bc3cb36a6fc909f49a4e35a3c2327fde, type: 3}
+  - {fileID: -365695720, guid: bc3cb36a6fc909f49a4e35a3c2327fde, type: 3}
+  - {fileID: -2069182504, guid: bc3cb36a6fc909f49a4e35a3c2327fde, type: 3}
+  - {fileID: 1252138652, guid: bc3cb36a6fc909f49a4e35a3c2327fde, type: 3}
+  - {fileID: 62038536, guid: 530e1c9ae9f6c5f46ab0f4f47487fcd6, type: 3}
+  - {fileID: 378986601, guid: 530e1c9ae9f6c5f46ab0f4f47487fcd6, type: 3}
+  - {fileID: 1553605003, guid: 530e1c9ae9f6c5f46ab0f4f47487fcd6, type: 3}
+  - {fileID: -299896304, guid: 530e1c9ae9f6c5f46ab0f4f47487fcd6, type: 3}
   - {fileID: 718671231, guid: 308756ff61e80fb4287a1769a9eb8b1a, type: 3}
   - {fileID: 358698807, guid: 308756ff61e80fb4287a1769a9eb8b1a, type: 3}
   m_PackedSpriteNamesToIndex:
@@ -85,12 +92,19 @@ SpriteAtlas:
   - BasicSlime_Jumping_0
   - BasicSlime_Jumping_3
   - BasicSlime_Jumping_2
-  - SlimeResidue
   - BasicSlime_Neutral_0
   - BasicSlime_Neutral_1
   - BasicSlime_Angry_2
   - BasicSlime_Angry_0
   - BasicSlime_Angry_1
+  - SlimeResidue_Evaporate_3
+  - SlimeResidue_Evaporate_2
+  - SlimeResidue_Evaporate_1
+  - SlimeResidue_Evaporate_0
+  - SlimeResidue_Spawn_1
+  - SlimeResidue_Spawn_0
+  - SlimeResidue_Spawn_3
+  - SlimeResidue_Spawn_2
   - SlimeShot_Flying_0
   - SlimeShot_Flying_1
   m_RenderDataMap: {}

@@ -117,6 +117,8 @@ public class PlayerMovementBattleSystem : MonoBehaviour
         Gizmos.DrawCube(_groundCheck.position, _groundCheckDimensions);
     }
 
+    #region StatusEffect
+
     public void AddStatusEffectSource(string effectName)
     {
         _statusEffectSources.Add(effectName);
@@ -136,6 +138,8 @@ public class PlayerMovementBattleSystem : MonoBehaviour
     {
         return _statusEffectSources.Contains(effectName);
     }
+
+    #endregion
 
     #region OnGettingAttacked
     public void ApplyKnockback(Facing direction, float force)
@@ -308,7 +312,7 @@ public class PlayerMovementBattleSystem : MonoBehaviour
     }
     #endregion
 
-    #region Normal Physical Attack
+    #region NormalPhysicalAttack
     public void PerformNormalPhysicalAttack()
     {
         StartCoroutine(NormalPhysicalAttackCo());
