@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5528260116539807200}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall Check
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5528260116749311091}
   - component: {fileID: 5528260116749311092}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -104,7 +104,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 928253621, guid: ef63640367805564e8b49fbf1c2056ab, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a96e9c94b7da0984db5ac6b4b5f98146, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -124,7 +124,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5528260116918356527}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Ground Check
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -158,7 +158,7 @@ GameObject:
   - component: {fileID: -1604668722598538230}
   - component: {fileID: -7423356348120569157}
   - component: {fileID: 5528260117579022404}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Basic Spider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -258,8 +258,12 @@ MonoBehaviour:
   EdgeOfGroundCheckDimensions: {x: 0.1, y: 0.1}
   WallCheck: {fileID: 5528260116539807200}
   WallCheckDimensions: {x: 0.1, y: 0.5}
-  _patrollingMoveSpeed: 0
-  _angryMoveSpeed: 0
+  _patrollingMoveSpeed: 2.5
+  _patrolPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  _angryMoveSpeed: 5
+  _attackRadius: 10
   _jumpForce: 0
   _webShot: {fileID: 0}
 --- !u!1 &5867443898895686415
@@ -271,7 +275,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7042243070630213650}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Edge of Ground Check
   m_TagString: Untagged
   m_Icon: {fileID: 0}

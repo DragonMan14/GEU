@@ -238,7 +238,7 @@ public class PlayerMovementBattleSystem : MonoBehaviour
         bool playerIsFalling = _rigidbody.velocity.y < -0f;
         bool minJumpAchieved = _rigidbody.position.y - _startingJumpHeight > _minJumpHeight;
         
-        if (CurrentlyGrounded())
+        if (IsCurrentlyGrounded())
         {
             SetGravityScale(_defaultGravityScale);
         }
@@ -283,9 +283,9 @@ public class PlayerMovementBattleSystem : MonoBehaviour
         return speed;
     }
 
-    private bool CurrentlyGrounded()
+    private bool IsCurrentlyGrounded()
     {
-        return Physics2D.OverlapBox(_groundCheck.position, _groundCheckDimensions, 0, _groundLayer);
+        return Physics2D.OverlapBox(_groundCheck.position, _groundCheckDimensions, 0, _groundLayer) && _rigidbody.velocity.y == 0;
     }
 
     private bool HasCoyoteTime()

@@ -27,7 +27,6 @@ public class BasicSpider : Enemy
     private int _consecutiveSameAttackCounter;
     private readonly int _maxStall = 3;
 
-
     // Custom implementation of gravity
     [Header("Gravity")]
     private Vector2 _gravityDirection;
@@ -47,6 +46,9 @@ public class BasicSpider : Enemy
     [Header("Angry")]
     [SerializeField] private float _angryMoveSpeed;
     [SerializeField] private float _attackRadius;
+    private readonly float _closeRangeUpdateFacingDuration = 0.25f;
+    private readonly float _closeRangeUpdateFacingDistance = 1;
+    private float _closeRangeUpdateFacingCooldown;
 
     [Header("Jumping")]
     [SerializeField] private float _jumpForce;
@@ -64,6 +66,8 @@ public class BasicSpider : Enemy
 
         _rotationCooldown = _rotationDuration;
 
+        _closeRangeUpdateFacingCooldown = _closeRangeUpdateFacingDuration;
+
         SetState(State.Patrolling);
     }
 
@@ -74,21 +78,54 @@ public class BasicSpider : Enemy
 
     public override void CustomUpdate()
     {
+        _closeRangeUpdateFacingCooldown -= Time.deltaTime;
         _rotationCooldown -= Time.deltaTime;
+
+        float distanceToPlayer;
+
+        if (IsHorizontal())
+        {
+            distanceToPlayer = this.gameObject.transform.position.x - PlayerManager.Instance.PlayerCombat.transform.position.x;
+        }
+        else
+        {
+            distanceToPlayer = this.gameObject.transform.position.y - PlayerManager.Instance.PlayerCombat.transform.position.y;
+        }
+
+        if (Mathf.Abs(distanceToPlayer) <= _closeRangeUpdateFacingDistance)
+        {
+            _closeRangeUpdateFacingCooldown = _closeRangeUpdateFacingDuration;
+        }
     }
 
     public override void UpdateFacing()
     {
-        if (_currentState == State.Patrolling)
+        if (_currentState == State.Patrolling || !IsCurrentlyGrounded() || _closeRangeUpdateFacingCooldown > 0)
         {
             return;
         }
-        bool playerOnRight = PlayerManager.Instance.PlayerCombat.transform.position.x > this.gameObject.transform.position.x;
-        if (playerOnRight && Direction == Facing.Left)
+        bool playerOnRightOrAbove;
+
+        if (IsHorizontal())
+        {
+            playerOnRightOrAbove = PlayerManager.Instance.PlayerCombat.transform.position.x > this.gameObject.transform.position.x;
+        }
+        else
+        {
+            playerOnRightOrAbove = PlayerManager.Instance.PlayerCombat.transform.position.y > this.gameObject.transform.position.y;
+        }
+
+        // If spider is climbing left or upsidedown, relative position needs to be flipped, draw it out im not explaining lmfao
+        if (_orientation == Orientation.UpsideDown || _orientation == Orientation.ClimbingLeft)
+        {
+            playerOnRightOrAbove = !playerOnRightOrAbove;
+        }
+
+        if (playerOnRightOrAbove && Direction == Facing.Left)
         {
             FlipRotation();
         }
-        else if (!playerOnRight && Direction == Facing.Right)
+        else if (!playerOnRightOrAbove && Direction == Facing.Right)
         {
             FlipRotation();
         }
@@ -99,19 +136,19 @@ public class BasicSpider : Enemy
         float speed = _currentState == State.Patrolling ? _patrollingMoveSpeed : _angryMoveSpeed;
         if (_orientation == Orientation.Upright)
         {
-            Rigidbody.velocity = Direction == Facing.Right ? new Vector2(speed, 0) : new Vector2(-speed, 0);
+            Rigidbody.velocity = Direction == Facing.Right ? new Vector2(speed, Rigidbody.velocity.y) : new Vector2(-speed, Rigidbody.velocity.y);
         }
         else if (_orientation == Orientation.UpsideDown)
         {
-            Rigidbody.velocity = Direction == Facing.Right ? new Vector2(-speed, 0) : new Vector2(speed, 0);
+            Rigidbody.velocity = Direction == Facing.Right ? new Vector2(-speed, Rigidbody.velocity.y) : new Vector2(speed, Rigidbody.velocity.y);
         }
         else if (_orientation == Orientation.ClimbingRight)
         {
-            Rigidbody.velocity = Direction == Facing.Right ? new Vector2(0, speed) : new Vector2(0, -speed);
+            Rigidbody.velocity = Direction == Facing.Right ? new Vector2(Rigidbody.velocity.x, speed) : new Vector2(Rigidbody.velocity.x, -speed);
         }
         else if (_orientation == Orientation.ClimbingLeft)
         {
-            Rigidbody.velocity = Direction == Facing.Right ? new Vector2(0, -speed) : new Vector2(0, speed);
+            Rigidbody.velocity = Direction == Facing.Right ? new Vector2(Rigidbody.velocity.x, -speed) : new Vector2(Rigidbody.velocity.x, speed);
         }
     }
 
@@ -245,6 +282,11 @@ public class BasicSpider : Enemy
         this.transform.position = position;
     }
 
+    private bool IsHorizontal()
+    {
+        return _orientation == Orientation.Upright || _orientation == Orientation.UpsideDown;
+    }
+
     private void ApplyGravity()
     {
         Rigidbody.AddForce(2 * _gravityScale * _gravityStrength * _gravityDirection, ForceMode2D.Force);
@@ -346,8 +388,38 @@ public class BasicSpider : Enemy
         // Pathfind to the player
         SetVelocity();
         // If it encounters a wall, climb over it
-        
+        if (IsCollidingWithWall())
+        {
+            // If facing right, rotate the z axis by 90
+            if (Direction == Facing.Right)
+            {
+                IncreaseOrientation("Wall");
+            }
+            // If facing left, rotate the z axis by -90
+            else if (Direction == Facing.Left)
+            {
+                DecreaseOrientation("Wall");
+            }
+        }
 
+        // If it reaches the top of a wall and is not upright, climb over the corner
+        if (IsCenteredAtEdgeOfGround() && _orientation != Orientation.Upright)
+        {
+            // If facing right, rotate the z axis by -90
+            if (Direction == Facing.Right)
+            {
+                DecreaseOrientation("Edge");
+            }
+            // If facing left, rotate the z axis by 90
+            else if (Direction == Facing.Left)
+            {
+                IncreaseOrientation("Edge");
+            }
+        }
+        else if (IsCenteredAtEdgeOfGround() && _orientation == Orientation.Upright)
+        {
+            // add jump here later
+        }
     }
 
     private void ExitAngryState()
