@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Script is attached to slime residue sprite mask
 public class BasicSlimeResidue : MonoBehaviour
 {
     private PlayerMovementBattleSystem PlayerMovementBattleSystem;

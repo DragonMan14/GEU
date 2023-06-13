@@ -16,12 +16,12 @@ public class BasicSlime : Enemy
     }
 
     private State _currentState;
-    private State _lastAttack;
+    private State _previousState;
     private int _consecutiveSameAttackCounter;
     private readonly int _maxStall = 3;
 
     [Header("Idle")]
-    [SerializeField] private float _attackRange;
+    [SerializeField] private float _attackRadius;
     private readonly float _minEndlag = 1f;
     private readonly float _maxEndlag = 2f;
     private float _currentEndlagDuration;
@@ -34,6 +34,7 @@ public class BasicSlime : Enemy
 
     [Header("SlimeShot")]
     [SerializeField] private GameObject _slimeball;
+    private readonly float _slimeShotDamage = 5f;
 
     [Header("SlimeResidue")]
     [SerializeField] private GameObject _slimeResidue;
@@ -57,7 +58,8 @@ public class BasicSlime : Enemy
     private void UpdateIdleState()
     {
         // Check if player is in range to attack
-        if (PlayerManager.Instance.PlayerCombat.transform.position.x > _attackRange)
+        float distanceToPlayer = Vector2.Distance(PlayerManager.Instance.PlayerCombat.transform.position, this.transform.position);
+        if (distanceToPlayer > _attackRadius)
         {
             return;
         }
@@ -71,11 +73,11 @@ public class BasicSlime : Enemy
             // 1 == Jump, 2 == Slimeshot
             int newState = Random.Range(1, 3);
 
-            if (((int)_lastAttack) != newState)
+            if (((int)_previousState) != newState)
             {
                 _consecutiveSameAttackCounter = 1;
             }
-            else if ((int)_lastAttack == newState && _consecutiveSameAttackCounter < _maxStall)
+            else if ((int)_previousState == newState && _consecutiveSameAttackCounter < _maxStall)
             {
                 _consecutiveSameAttackCounter++;
             }
@@ -130,7 +132,7 @@ public class BasicSlime : Enemy
     private void InstantiateSlimeShot()
     {
         Vector3 spawnPosition;
-        if (Direction == Facing.right)
+        if (Direction == Facing.Right)
         {
             spawnPosition = this.transform.position + new Vector3(0.75f, 0, 0);
         }
@@ -139,7 +141,7 @@ public class BasicSlime : Enemy
             spawnPosition = this.transform.position + new Vector3(-0.75f, 0, 0);
         }
         SlimeShot shot = Instantiate(_slimeball, spawnPosition, Quaternion.identity).GetComponent<SlimeShot>();
-        shot.Damage = 5f;
+        shot.Damage = _slimeShotDamage;
         shot.Pew(Direction);
     }
 
@@ -176,7 +178,7 @@ public class BasicSlime : Enemy
 
         // Uses the jump force and x distance to calculate the velocity
         Vector2 velocityForce;
-        if (Direction == Facing.left)
+        if (Direction == Facing.Left)
         {
             velocityForce = new Vector2(-absoluteXDistance, jumpForce);
         }
@@ -192,7 +194,7 @@ public class BasicSlime : Enemy
     private void UpdateJumpingState()
     {
         // When the slime lands on the ground, set it's state back to idle
-        if (CurrentlyGrounded() && Rigidbody.velocity.y == 0)
+        if (IsCurrentlyGrounded() && Rigidbody.velocity.y == 0)
         {
             SetState(State.Idle);
         }
@@ -219,7 +221,7 @@ public class BasicSlime : Enemy
         {
             float raycastXCoordinate = leftEdge.x + xOffset;
             Vector2 raycastPoint = new Vector2(raycastXCoordinate, leftEdge.y);
-            RaycastHit2D raycastGroundCheck = Physics2D.Raycast(raycastPoint, Vector2.down, 5f, GroundLayer);
+            RaycastHit2D raycastGroundCheck = Physics2D.Raycast(raycastPoint, Vector2.down, 5f, EnvironmentLayer);
             bool hitGround = raycastGroundCheck.distance < 0.1f ? true : false;
             // Note down the sections where ground ends and ground starts
             groundChecks.Add(new(raycastXCoordinate, hitGround));
@@ -297,7 +299,7 @@ public class BasicSlime : Enemy
                 EnterSlimeShotState();
                 break;
         }
-        _lastAttack = _currentState;
+        _previousState = _currentState;
         _currentState = newState;
     }
 

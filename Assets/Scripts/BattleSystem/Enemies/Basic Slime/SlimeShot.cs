@@ -24,7 +24,7 @@ public class SlimeShot : MonoBehaviour
         {
             PlayerManager.Instance.PlayerAttributes.DrainHealth(Damage);
 
-            Facing knockbackDirection = PlayerManager.Instance.PlayerCombat.transform.position.x > this.transform.position.x ? Facing.right : Facing.left;
+            Facing knockbackDirection = PlayerManager.Instance.PlayerCombat.transform.position.x > this.transform.position.x ? Facing.Right : Facing.Left;
 
             PlayerManager.Instance.PlayerMovementManager.PlayerMovementBattleSystem.ApplyKnockback(knockbackDirection, 1f);
         }
@@ -37,7 +37,7 @@ public class SlimeShot : MonoBehaviour
 
     public void Pew(Facing direction)
     {
-        if (direction == Facing.right)
+        if (direction == Facing.Right)
         {
             _rigidbody.velocity = new Vector2(5, 0);
         }

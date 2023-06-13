@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +9,8 @@ using UnityEngine;
 
 public enum Facing
 {
-    left,
-    right
+    Left,
+    Right
 }
 
 public abstract class Enemy : MonoBehaviour
@@ -17,47 +18,61 @@ public abstract class Enemy : MonoBehaviour
     public Facing Direction;
 
     [Header("Components")]
-    public Rigidbody2D Rigidbody;
-    public Animator Animator;
-    public SpriteRenderer SpriteRenderer;
+    [HideInInspector] public Rigidbody2D Rigidbody;
+    [HideInInspector] public Animator Animator;
+    [HideInInspector] public SpriteRenderer SpriteRenderer;
 
     [Header("Knockback")]
     public float BaseKnockbackForceMultiplier = 1f;
     public float BaseKnockbackDamage = 5f;
 
+    [Header("Physics")]
+    public LayerMask EnvironmentLayer;
+
     [Header("Ground Check")]
     public Transform GroundCheck;
-    public LayerMask GroundLayer;
     public Vector2 GroundCheckDimensions;
+    public Transform EdgeOfGroundCheck;
+    public Vector2 EdgeOfGroundCheckDimensions;
+
+    [Header("Wall Check")]
+    public Transform WallCheck;
+    public Vector2 WallCheckDimensions;
 
     private void Awake()
     {
         Physics2D.IgnoreCollision(this.GetComponent<Collider2D>(), PlayerManager.Instance.PlayerCombat.GetComponent<Collider2D>());
-        Direction = Facing.right;
+        Direction = Facing.Right;
 
         Rigidbody = GetComponent<Rigidbody2D>();
         Animator = GetComponent<Animator>();
-        SpriteRenderer = GetComponent<SpriteRenderer>();
+        SpriteRenderer = GetComponentInChildren<SpriteRenderer>();
     }
 
     public virtual void Update()
     {
         UpdateFacing();
         UpdateCurrentState();
+        CustomUpdate();
+    }
+
+    public virtual void CustomUpdate()
+    {
+
     }
 
     public abstract void UpdateCurrentState();
 
     #region Physics
 
-    public void UpdateFacing()
+    public virtual void UpdateFacing()
     {
         bool playerOnRight = PlayerManager.Instance.PlayerCombat.transform.position.x > this.gameObject.transform.position.x;
-        if (playerOnRight && Direction == Facing.left)
+        if (playerOnRight && Direction == Facing.Left)
         {
             FlipRotation();
         }
-        else if (!playerOnRight && Direction == Facing.right)
+        else if (!playerOnRight && Direction == Facing.Right)
         {
             FlipRotation();
         }
@@ -65,28 +80,59 @@ public abstract class Enemy : MonoBehaviour
 
     public void FlipRotation()
     {
-        if (Direction == Facing.left)
+        if (Direction == Facing.Left)
         {
-            Direction = Facing.right;
+            Direction = Facing.Right;
         }
         else
         {
-            Direction = Facing.left;
+            Direction = Facing.Left;
         }
         Vector3 flippedScale = this.transform.localScale;
         flippedScale.x *= -1;
         this.transform.localScale = flippedScale;
     }
 
-    public bool CurrentlyGrounded()
+    public bool IsCurrentlyGrounded()
     {
-        return Physics2D.OverlapBox(GroundCheck.position, GroundCheckDimensions, 0, GroundLayer);
+        return Physics2D.OverlapBox(GroundCheck.position, GroundCheckDimensions, this.transform.eulerAngles.z, EnvironmentLayer);
+    }
+
+    public bool IsCollidingWithWall()
+    {
+        return Physics2D.OverlapBox(WallCheck.position, WallCheckDimensions, this.transform.eulerAngles.z, EnvironmentLayer);
+    }
+
+    public bool IsAtEdgeOfGround()
+    {
+        return !Physics2D.OverlapBox(EdgeOfGroundCheck.position, EdgeOfGroundCheckDimensions, this.transform.eulerAngles.z, EnvironmentLayer);
+    }
+
+    public bool IsCenteredAtEdgeOfGround()
+    {
+        return !Physics2D.OverlapBox(GroundCheck.position, new Vector2(0.1f, 0.1f), this.transform.eulerAngles.z, EnvironmentLayer);
     }
 
     public virtual void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;
-        Gizmos.DrawCube(GroundCheck.position, GroundCheckDimensions);
+        Matrix4x4 tempMatrix = Gizmos.matrix;
+        if (GroundCheck != null)
+        {
+            Gizmos.matrix = Matrix4x4.TRS(GroundCheck.position, this.transform.rotation, this.transform.lossyScale);
+            Gizmos.DrawCube(Vector2.zero, GroundCheckDimensions);
+        }
+        if (WallCheck != null)
+        {
+            Gizmos.matrix = Matrix4x4.TRS(WallCheck.position, this.transform.rotation, this.transform.lossyScale);
+            Gizmos.DrawCube(Vector2.zero, WallCheckDimensions);
+        }
+        if (EdgeOfGroundCheck != null)
+        {
+            Gizmos.matrix = Matrix4x4.TRS(EdgeOfGroundCheck.position, this.transform.rotation, this.transform.lossyScale);
+            Gizmos.DrawCube(Vector2.zero, EdgeOfGroundCheckDimensions);
+        }
+        Gizmos.matrix = tempMatrix;
     }
 
     // Basic knockback collision damage

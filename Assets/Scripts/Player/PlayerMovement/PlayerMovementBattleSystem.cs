@@ -145,7 +145,7 @@ public class PlayerMovementBattleSystem : MonoBehaviour
     public void ApplyKnockback(Facing direction, float force)
     {
         finalKnockbackForce = _baseKnockbackForce;
-        if (direction == Facing.right)
+        if (direction == Facing.Right)
         {
             finalKnockbackForce.x *= force;
         }
