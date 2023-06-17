@@ -156,7 +156,6 @@ public class BasicSpider : Enemy
 
     private void IncreaseOrientation(string mode)
     {
-        print("increase");
         // If rotation is on cooldown, don't rotate
         if (_rotationCooldown > 0)
         {
@@ -197,7 +196,6 @@ public class BasicSpider : Enemy
 
     private void DecreaseOrientation(string mode)
     {
-        print("decrease");
         // If rotation is on cooldown, don't rotate
         if (_rotationCooldown > 0)
         {
