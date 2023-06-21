@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.SqlTypes;
 using Unity.Profiling.LowLevel.Unsafe;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace Pathfinding
@@ -18,6 +19,12 @@ namespace Pathfinding
         [SerializeField] private bool _drawBoundingBoxes = true;
         [SerializeField] private bool _drawNodes = true;
         [SerializeField] private bool _drawEdges = true;
+        [SerializeField] private bool _drawGround = true;
+        [SerializeField] private bool _drawWall = true;
+        [SerializeField] private bool _drawCeiling = true;
+        [SerializeField] private bool _drawAir = true;
+        [SerializeField] private bool _drawObstacle = true;
+        [SerializeField] private bool _drawCorner = true;
 
         private List<Node> _nodes = new List<Node>();
 
@@ -33,10 +40,17 @@ namespace Pathfinding
 
         private void Update()
         {
-                Node c1 = GetNodeClosestTo(starting.position);
-                Node c2 = GetNodeClosestTo(ending.position);
-                Pathfinder pathfinder = new Pathfinder();
-                path = pathfinder.AStarPathfinding(c1, c2);
+            List<NodeType> validTypes = new List<NodeType>
+            {
+                NodeType.Ground,
+                NodeType.Wall,
+                NodeType.Ceiling,
+                NodeType.Corner
+            };
+            Node c1 = GetNodeClosestTo(starting.position, validTypes);
+            Node c2 = GetNodeClosestTo(ending.position, validTypes);
+            Pathfinder pathfinder = new Pathfinder();
+            path = pathfinder.AStarPathfinding(validTypes, c1, c2);
         }
 
         private bool CoordinatesAreInBound(Vector2 coordinates)
@@ -74,7 +88,7 @@ namespace Pathfinding
             // A list of coordinates that you've already visited
             List<Vector2> AlreadyVisitedCoordinates = new List<Vector2>();
             // The starting node starts at the bottom right corner of the first bounding box
-            Node startingNode = new Node(_boundingBoxes[0].BottomLeftCorner);
+            Node startingNode = new Node(_boundingBoxes[0].BottomLeftCorner, distanceBetweenNodes);
             // Add the starting node to the overall list of nodes, the nodes to initialize, and the already visited coordinates
             _nodes.Add(startingNode);
             AlreadyVisitedCoordinates.Add(startingNode.Coordinates);
@@ -88,13 +102,12 @@ namespace Pathfinding
                 // Loop through all the adjacent coordinates at intervals of the distance between nodes
                 for (int i = 0; i < 4; i++)
                 {
-                    var newCoordinates = i switch
+                    Vector2 newCoordinates = i switch
                     {
                         0 => new Vector2(currentNode.Coordinates.x + distanceBetweenNodes, currentNode.Coordinates.y),// East neighbor
                         1 => new Vector2(currentNode.Coordinates.x - distanceBetweenNodes, currentNode.Coordinates.y),// West neighbor
                         2 => new Vector2(currentNode.Coordinates.x, currentNode.Coordinates.y + distanceBetweenNodes),// North neighbor
-                        3 => new Vector2(currentNode.Coordinates.x, currentNode.Coordinates.y - distanceBetweenNodes),// South neighbor
-                        _ => Vector2.negativeInfinity,
+                        _ => new Vector2(currentNode.Coordinates.x, currentNode.Coordinates.y - distanceBetweenNodes),// South neighborss
                     };
                     // If the neighbor has already been visited
                     if (AlreadyVisitedCoordinates.Contains(newCoordinates))
@@ -112,7 +125,7 @@ namespace Pathfinding
                     if (CoordinatesAreInBound(newCoordinates))
                     {
                         // Create a new node at the new coordinates
-                        Node nextNode = new Node(newCoordinates);
+                        Node nextNode = new Node(newCoordinates, distanceBetweenNodes);
                         // Connect the next node to the current node
                         nextNode.ConnectNode(currentNode);
                         // Add it to all the lists and queues
@@ -130,6 +143,24 @@ namespace Pathfinding
             Node closestNode = null;
             foreach (Node node in _nodes)
             {
+                float distanceToCoordinates = Vector2.Distance(coordinates, node.Coordinates);
+                if (distanceToCoordinates < minDistance)
+                {
+                    closestNode = node;
+                    minDistance = distanceToCoordinates;
+                }
+            }
+            return closestNode;
+        }
+        private Node GetNodeClosestTo(Vector2 coordinates, List<NodeType> validTypes)
+        {
+            float minDistance = float.MaxValue;
+            Node closestNode = null;
+            foreach (Node node in _nodes)
+            {
+                if (!node.ContainsNodeType(validTypes)) {
+                    continue;
+                }
                 float distanceToCoordinates = Vector2.Distance(coordinates, node.Coordinates);
                 if (distanceToCoordinates < minDistance)
                 {
@@ -162,21 +193,59 @@ namespace Pathfinding
             {
                 foreach (Node node in _nodes)
                 {
-                    Gizmos.color = Color.cyan;
-                    Gizmos.DrawSphere(node.Coordinates, 0.2f);
-
-                    // Draw edges
-                    if (_drawEdges)
+                    if (node.ContainsNodeType(NodeType.Obstacle) && _drawObstacle)
+                    {
+                        Gizmos.color = Color.black;
+                        Gizmos.DrawSphere(node.Coordinates, 0.2f);
+                    }
+                    else if (node.ContainsNodeType(NodeType.Ground) && _drawGround)
+                    {
+                        Gizmos.color = Color.blue;
+                        Gizmos.DrawSphere(node.Coordinates, 0.2f);
+                    }
+                    else if (node.ContainsNodeType(NodeType.Wall) && _drawWall)
+                    {
+                        Gizmos.color = Color.yellow;
+                        Gizmos.DrawSphere(node.Coordinates, 0.2f);
+                    }
+                    else if (node.ContainsNodeType(NodeType.Ceiling) && _drawCeiling)
                     {
                         Gizmos.color = Color.green;
-                        foreach (Node node2 in node.Neighbors)
-                        {
-                            Gizmos.DrawLine(node.Coordinates, node2.Coordinates);
-                        }
+                        Gizmos.DrawSphere(node.Coordinates, 0.2f);
+                    }
+                    else if (node.ContainsNodeType(NodeType.Corner) && _drawCorner)
+                    {
+                        Gizmos.color = Color.red;
+                        Gizmos.DrawSphere(node.Coordinates, 0.2f);
+                    }
+
+                    else if (node.ContainsNodeType(NodeType.Air) && _drawAir)
+                    {
+                        Gizmos.color = Color.white;
+                        Gizmos.DrawSphere(node.Coordinates, 0.2f);
+                    }
+                    else
+                    {
+                        Gizmos.color = Color.cyan;
+                        Gizmos.DrawSphere(node.Coordinates, 0.2f);
                     }
                 }
             }
 
+            // Draw edges
+            if (_drawEdges)
+            {
+                foreach (Node node in _nodes)
+                {
+                    Gizmos.color = Color.green;
+                    foreach (Node node2 in node.Neighbors)
+                    {
+                        Gizmos.DrawLine(node.Coordinates, node2.Coordinates);
+                    }
+                }
+            }
+
+            // Testing pathfinding
             if (path != null)
             {
                 Gizmos.color = Color.green;
@@ -184,6 +253,7 @@ namespace Pathfinding
                 Node current = copy.Pop();
                 foreach(Node next in path)
                 {
+                    //Gizmos.DrawSphere(current.Coordinates, 0.2f);
                     Gizmos.DrawLine(current.Coordinates, next.Coordinates);
                     current = next;
                 }

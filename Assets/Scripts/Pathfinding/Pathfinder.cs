@@ -9,7 +9,7 @@ namespace Pathfinding
 {
     public class Pathfinder
     {
-        public Stack<Node> AStarPathfinding(Node start, Node goal)
+        public Stack<Node> AStarPathfinding(List<NodeType> validNodeTypes, Node start, Node goal)
         {
             MinPQ<NodeWithPriority> frontier = new MinPQ<NodeWithPriority>(NodeWithPriority.ByPriorityOrder());
             frontier.Insert(new NodeWithPriority(start, 0));
@@ -29,7 +29,8 @@ namespace Pathfinding
 
                 foreach (Node next in current.Neighbors)
                 {
-                    if (!CanVisit(next)) {
+                    if (!next.ContainsNodeType(validNodeTypes))
+                    {
                         continue;
                     }
                     float newCost = costSoFar[current] + Grid.CostFrom(current, next);
@@ -37,7 +38,7 @@ namespace Pathfinding
                     if (!alreadyVisited || newCost < costSoFar[next])
                     {
                         costSoFar[next] = newCost;
-                        float priority = newCost + current.GetManhattanDistanceTo(next);
+                        float priority = newCost + goal.GetManhattanDistanceTo(next);
                         frontier.Insert(new NodeWithPriority(next, priority));
                         cameFrom[next] = current;
                     }
@@ -62,11 +63,6 @@ namespace Pathfinding
             return path;
         }
 
-        public bool CanVisit(Node node)
-        {
-            return true;
-        }
-
         private class NodeWithPriority : IComparable<NodeWithPriority>
         {
             public Node Node { get; private set; }
@@ -82,7 +78,6 @@ namespace Pathfinding
             {
                 return this.Priority.CompareTo(other.Priority);
             }
-
 
             public static IComparer<NodeWithPriority> ByPriorityOrder()
             {
