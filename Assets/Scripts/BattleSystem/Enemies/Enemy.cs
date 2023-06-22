@@ -1,10 +1,5 @@
-using JetBrains.Annotations;
-using System.Collections;
+using Pathfinding;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 
 public enum Facing
@@ -13,9 +8,12 @@ public enum Facing
     Right
 }
 
-public abstract class Enemy : MonoBehaviour
+public abstract class Enemy : MonoBehaviour, IPathfindingRestrictor
 {
     public Facing Direction;
+
+    [Header("Pathfinding")]
+    public Stack<Node> CurrentPath;
 
     [Header("Components")]
     [HideInInspector] public Rigidbody2D Rigidbody;
@@ -59,6 +57,11 @@ public abstract class Enemy : MonoBehaviour
     public virtual void CustomUpdate()
     {
 
+    }
+
+    public virtual bool IsValidPathAvailable(Node current, Node next)
+    {
+        return true;
     }
 
     public abstract void UpdateCurrentState();

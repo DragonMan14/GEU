@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
+using Pathfinding;
 using UnityEngine;
 
 public class BasicSpider : Enemy
@@ -129,6 +130,32 @@ public class BasicSpider : Enemy
         {
             FlipRotation();
         }
+    }
+
+    public override bool IsValidPathAvailable(Node current, Node next)
+    {
+        foreach (NodeType type in current.NodeTypes)
+        {
+            if (type == NodeType.Ground && next.ContainsNodeType(new List<NodeType> { NodeType.Ground, NodeType.Wall, NodeType.Corner }))
+            {
+                return true;
+            }
+            else if (type == NodeType.Wall && (((next.ContainsNodeType(NodeType.Wall) || next.ContainsNodeType(NodeType.Corner)) && current.Coordinates.x == next.Coordinates.x) || next.ContainsNodeType(new List<NodeType> { NodeType.Ground, NodeType.Ceiling })))
+            {
+                return true;
+            }
+            else if (type == NodeType.Ceiling && next.ContainsNodeType(new List<NodeType> { NodeType.Ceiling, NodeType.Wall, NodeType.Corner }))
+            {
+                return true;
+            }
+            else if (type == NodeType.Corner && ((next.ContainsNodeType(NodeType.Wall) && current.Coordinates.x == next.Coordinates.x) || ((next.ContainsNodeType(NodeType.Ground) || next.ContainsNodeType(NodeType.Ceiling)) && current.Coordinates.y == next.Coordinates.y)))
+            {
+                print("eirjhgfoiurew");
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void SetVelocity()

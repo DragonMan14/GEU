@@ -2,6 +2,7 @@ using DataStructures;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -9,7 +10,7 @@ namespace Pathfinding
 {
     public class Pathfinder
     {
-        public Stack<Node> AStarPathfinding(List<NodeType> validNodeTypes, Node start, Node goal)
+        public Stack<Node> AStarPathfinding(IPathfindingRestrictor restrictor, Node start, Node goal)
         {
             MinPQ<NodeWithPriority> frontier = new MinPQ<NodeWithPriority>(NodeWithPriority.ByPriorityOrder());
             frontier.Insert(new NodeWithPriority(start, 0));
@@ -29,7 +30,7 @@ namespace Pathfinding
 
                 foreach (Node next in current.Neighbors)
                 {
-                    if (!next.ContainsNodeType(validNodeTypes))
+                    if (!restrictor.IsValidPathAvailable(current, next))
                     {
                         continue;
                     }

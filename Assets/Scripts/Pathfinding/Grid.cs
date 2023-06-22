@@ -31,6 +31,7 @@ namespace Pathfinding
         private Stack<Node> path;
         public Transform starting;
         public Transform ending;
+        public BasicSpider spider;
 
         private void Awake()
         {
@@ -45,12 +46,12 @@ namespace Pathfinding
                 NodeType.Ground,
                 NodeType.Wall,
                 NodeType.Ceiling,
-                NodeType.Corner
+                NodeType.Corner,
             };
             Node c1 = GetNodeClosestTo(starting.position, validTypes);
             Node c2 = GetNodeClosestTo(ending.position, validTypes);
             Pathfinder pathfinder = new Pathfinder();
-            path = pathfinder.AStarPathfinding(validTypes, c1, c2);
+            path = pathfinder.AStarPathfinding(spider.GetComponent<IPathfindingRestrictor>(), c1, c2);
         }
 
         private bool CoordinatesAreInBound(Vector2 coordinates)
