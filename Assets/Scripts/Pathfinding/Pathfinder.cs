@@ -10,8 +10,20 @@ namespace Pathfinding
 {
     public class Pathfinder
     {
-        public Stack<Node> AStarPathfinding(IPathfindingRestrictor restrictor, Node start, Node goal)
+        public static Path AStarPathfinding(IPathfindingRestrictor restrictor, Node start, Node goal)
         {
+            if (restrictor == null)
+            {
+                throw new ArgumentNullException("Restrictor is null");
+            }
+            if (start == null)
+            {
+                throw new ArgumentNullException("Starting node is null");
+            }
+            if (goal == null)
+            {
+                throw new ArgumentNullException("Goal node is null");
+            }
             MinPQ<NodeWithPriority> frontier = new MinPQ<NodeWithPriority>(NodeWithPriority.ByPriorityOrder());
             frontier.Insert(new NodeWithPriority(start, 0));
             Dictionary<Node, Node> cameFrom = new Dictionary<Node, Node>();
@@ -48,7 +60,7 @@ namespace Pathfinding
 
             if (!cameFrom.ContainsKey(goal))
             {
-                return null;
+                return new Path(new Stack<Node>());
             }
 
             Stack<Node> path = new Stack<Node>();
@@ -61,7 +73,7 @@ namespace Pathfinding
                 }
             }
 
-            return path;
+            return new Path(path);
         }
 
         private class NodeWithPriority : IComparable<NodeWithPriority>

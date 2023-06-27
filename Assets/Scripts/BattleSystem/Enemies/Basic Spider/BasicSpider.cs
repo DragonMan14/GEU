@@ -1,7 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
 using Pathfinding;
 using UnityEngine;
 
@@ -70,6 +67,8 @@ public class BasicSpider : Enemy
         _closeRangeUpdateFacingCooldown = _closeRangeUpdateFacingDuration;
 
         SetState(State.Patrolling);
+
+        validNodeTypes = new List<NodeType> { NodeType.Ground, NodeType.Wall, NodeType.Ceiling, NodeType.Corner };
     }
 
     private void FixedUpdate()
@@ -109,11 +108,11 @@ public class BasicSpider : Enemy
 
         if (IsHorizontal())
         {
-            playerOnRightOrAbove = PlayerManager.Instance.PlayerCombat.transform.position.x > this.gameObject.transform.position.x;
+            playerOnRightOrAbove = NextNode.Coordinates.x > this.gameObject.transform.position.x;
         }
         else
         {
-            playerOnRightOrAbove = PlayerManager.Instance.PlayerCombat.transform.position.y > this.gameObject.transform.position.y;
+            playerOnRightOrAbove = NextNode.Coordinates.y > this.gameObject.transform.position.y;
         }
 
         // If spider is climbing left or upsidedown, relative position needs to be flipped, draw it out im not explaining lmfao
@@ -130,6 +129,11 @@ public class BasicSpider : Enemy
         {
             FlipRotation();
         }
+    }
+
+    public override void CustomOnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(this.transform.position, _attackRadius);
     }
 
     public override bool IsValidPathAvailable(Node current, Node next)
@@ -150,12 +154,17 @@ public class BasicSpider : Enemy
             }
             else if (type == NodeType.Corner && ((next.ContainsNodeType(NodeType.Wall) && current.Coordinates.x == next.Coordinates.x) || ((next.ContainsNodeType(NodeType.Ground) || next.ContainsNodeType(NodeType.Ceiling)) && current.Coordinates.y == next.Coordinates.y)))
             {
-                print("eirjhgfoiurew");
                 return true;
             }
         }
-
         return false;
+    }
+
+    public void Pathfind()
+    {
+        // Get path to goal
+        // Store the next node you have to go to in CurrentTarget
+        // Move towards that target
     }
 
     private void SetVelocity()
@@ -405,12 +414,47 @@ public class BasicSpider : Enemy
 
     private void EnterAngryState()
     {
-
+        // Set the goal node to the player
+        GoalNode = PathfindingManager.Instance.CurrentGrid.GetNodeClosestTo(PlayerManager.Instance.PlayerCombat.transform.position, validNodeTypes);
+        // Set the path from the spider to the player
+        CurrentPath = Pathfinder.AStarPathfinding(this, CurrentNode, GoalNode);
+        NextNode = CurrentPath.GetNextNode();
     }
 
     private void UpdateAngryState()
     {
-        // Pathfind to the player
+        // Get the node closest to the player's position
+        Node playerNode = PathfindingManager.Instance.CurrentGrid.GetNodeClosestTo(PlayerManager.Instance.PlayerCombat.transform.position, validNodeTypes);
+        // If that is different from what it was before, update the goal node, current path, and next node
+        if (GoalNode != playerNode)
+        {
+            GoalNode = playerNode;
+            CurrentPath = Pathfinder.AStarPathfinding(this, CurrentNode, GoalNode);
+            NextNode = CurrentPath.GetNextNode();
+        }
+        // If the spider has reached next node, update next node to the subsequent node in the path
+        if (NextNode == CurrentNode)
+        {
+            NextNode = CurrentPath.GetNextNode();
+        }
+        bool furtherAlongPath = CurrentPath.Contains(CurrentNode) && NextNode != CurrentNode;
+        if (furtherAlongPath)
+        {
+            while (CurrentNode != NextNode)
+            {
+                NextNode = CurrentPath.GetNextNode();
+            }
+            NextNode = CurrentPath.GetNextNode();
+        }
+
+        // If currentNode = nextNode
+        // If reached farther along the path
+
+        // If grounded and current node is not on the path - pathfind again
+
+
+
+        // Move towards the next node
         SetVelocity();
         // If it encounters a wall, climb over it
         if (IsCollidingWithWall())
@@ -443,7 +487,17 @@ public class BasicSpider : Enemy
         }
         else if (IsCenteredAtEdgeOfGround() && _orientation == Orientation.Upright)
         {
-            // add jump here later
+            // add jump here later maybe
+            // If facing right, rotate the z axis by -90
+            if (Direction == Facing.Right)
+            {
+                DecreaseOrientation("Edge");
+            }
+            // If facing left, rotate the z axis by 90
+            else if (Direction == Facing.Left)
+            {
+                IncreaseOrientation("Edge");
+            }
         }
     }
 

@@ -28,7 +28,7 @@ namespace Pathfinding
 
         private List<Node> _nodes = new List<Node>();
 
-        private Stack<Node> path;
+        private Path path;
         public Transform starting;
         public Transform ending;
         public BasicSpider spider;
@@ -39,6 +39,10 @@ namespace Pathfinding
             InitializeGrid();
         }
 
+        private void Start()
+        {
+            PathfindingManager.Instance.CurrentGrid = this;
+        }
         private void Update()
         {
             List<NodeType> validTypes = new List<NodeType>
@@ -50,8 +54,7 @@ namespace Pathfinding
             };
             Node c1 = GetNodeClosestTo(starting.position, validTypes);
             Node c2 = GetNodeClosestTo(ending.position, validTypes);
-            Pathfinder pathfinder = new Pathfinder();
-            path = pathfinder.AStarPathfinding(spider.GetComponent<IPathfindingRestrictor>(), c1, c2);
+            path = Pathfinder.AStarPathfinding(spider.GetComponent<IPathfindingRestrictor>(), c1, c2);
         }
 
         private bool CoordinatesAreInBound(Vector2 coordinates)
@@ -138,7 +141,7 @@ namespace Pathfinding
             }
         }
 
-        private Node GetNodeClosestTo(Vector2 coordinates)
+        public Node GetNodeClosestTo(Vector2 coordinates)
         {
             float minDistance = float.MaxValue;
             Node closestNode = null;
@@ -153,7 +156,7 @@ namespace Pathfinding
             }
             return closestNode;
         }
-        private Node GetNodeClosestTo(Vector2 coordinates, List<NodeType> validTypes)
+        public Node GetNodeClosestTo(Vector2 coordinates, List<NodeType> validTypes)
         {
             float minDistance = float.MaxValue;
             Node closestNode = null;
@@ -247,11 +250,10 @@ namespace Pathfinding
             }
 
             // Testing pathfinding
-            if (path != null)
+            if (path != null && path.Count > 0)
             {
                 Gizmos.color = Color.green;
-                Stack<Node> copy = new Stack<Node>( new Stack<Node>(path) );
-                Node current = copy.Pop();
+                Node current = path.Peek();
                 foreach(Node next in path)
                 {
                     //Gizmos.DrawSphere(current.Coordinates, 0.2f);

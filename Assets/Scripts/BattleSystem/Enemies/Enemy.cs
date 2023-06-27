@@ -12,13 +12,18 @@ public abstract class Enemy : MonoBehaviour, IPathfindingRestrictor
 {
     public Facing Direction;
 
-    [Header("Pathfinding")]
-    public Stack<Node> CurrentPath;
-
     [Header("Components")]
     [HideInInspector] public Rigidbody2D Rigidbody;
     [HideInInspector] public Animator Animator;
     [HideInInspector] public SpriteRenderer SpriteRenderer;
+
+    [Header("Pathfinding")]
+    public Path CurrentPath; // The path from the current node to goal node
+    public Node CurrentNode; // The node the enemy is currently at
+    public Node NextNode; // The next node in our path
+    public Node GoalNode; // The node we want to end up at
+    public List<NodeType> validNodeTypes;
+    public Transform NodeCheck;
 
     [Header("Knockback")]
     public float BaseKnockbackForceMultiplier = 1f;
@@ -45,10 +50,13 @@ public abstract class Enemy : MonoBehaviour, IPathfindingRestrictor
         Rigidbody = GetComponent<Rigidbody2D>();
         Animator = GetComponent<Animator>();
         SpriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        CurrentPath = new Path(new Stack<Node>());
     }
 
     public virtual void Update()
     {
+        CurrentNode = PathfindingManager.Instance.CurrentGrid.GetNodeClosestTo(NodeCheck.position, validNodeTypes);
         UpdateFacing();
         UpdateCurrentState();
         CustomUpdate();
@@ -135,7 +143,41 @@ public abstract class Enemy : MonoBehaviour, IPathfindingRestrictor
             Gizmos.matrix = Matrix4x4.TRS(EdgeOfGroundCheck.position, this.transform.rotation, this.transform.lossyScale);
             Gizmos.DrawCube(Vector2.zero, EdgeOfGroundCheckDimensions);
         }
+        if (NodeCheck != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.matrix = Matrix4x4.TRS(NodeCheck.position, this.transform.rotation, this.transform.lossyScale);
+            Gizmos.DrawSphere(Vector2.zero, 0.1f);
+        }
         Gizmos.matrix = tempMatrix;
+
+        Gizmos.color = Color.blue;
+        if (CurrentPath != null && CurrentPath.Count != 0)
+        {
+            Node current = CurrentPath.Peek();
+            foreach (Node next in CurrentPath)
+            {
+                Gizmos.DrawLine(current.Coordinates, next.Coordinates);
+                current = next;
+            }
+        }
+
+        if (CurrentNode != null)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawSphere(CurrentNode.Coordinates, 0.2f);
+        }
+        if (NextNode != null)
+        {
+            Gizmos.color = Color.black;
+            Gizmos.DrawSphere(NextNode.Coordinates, 0.2f);
+        }
+        CustomOnDrawGizmos();
+    }
+
+    public virtual void CustomOnDrawGizmos()
+    {
+
     }
 
     // Basic knockback collision damage
