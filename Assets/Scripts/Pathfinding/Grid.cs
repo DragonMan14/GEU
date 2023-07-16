@@ -242,9 +242,16 @@ namespace Pathfinding
                 foreach (Node node in _nodes)
                 {
                     Gizmos.color = Color.green;
-                    foreach (Node node2 in node.Neighbors)
+                    foreach (Edge edge in node.Neighbors)
                     {
-                        Gizmos.DrawLine(node.Coordinates, node2.Coordinates);
+                        Gizmos.color = edge.EdgeType switch
+                        {
+                            EdgeType.Walk => Color.blue,
+                            EdgeType.Climb => Color.yellow,
+                            EdgeType.Fly => Color.white,
+                            _ => Color.black,
+                        };
+                        Gizmos.DrawLine(node.Coordinates, edge.GetOtherNode(node).Coordinates);
                     }
                 }
             }
@@ -253,12 +260,10 @@ namespace Pathfinding
             if (path != null && path.Count > 0)
             {
                 Gizmos.color = Color.green;
-                Node current = path.Peek();
-                foreach(Node next in path)
+                foreach(Edge next in path)
                 {
                     //Gizmos.DrawSphere(current.Coordinates, 0.2f);
-                    Gizmos.DrawLine(current.Coordinates, next.Coordinates);
-                    current = next;
+                    Gizmos.DrawLine(next.GetNode1().Coordinates, next.GetNode2().Coordinates);
                 }
             }
         }

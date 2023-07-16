@@ -69,6 +69,7 @@ public class BasicSpider : Enemy
         SetState(State.Patrolling);
 
         validNodeTypes = new List<NodeType> { NodeType.Ground, NodeType.Wall, NodeType.Ceiling, NodeType.Corner };
+        validEdgeTypes = new List<EdgeType> { EdgeType.Walk, EdgeType.Climb };
     }
 
     private void FixedUpdate()
@@ -134,37 +135,16 @@ public class BasicSpider : Enemy
     public override void CustomOnDrawGizmos()
     {
         Gizmos.DrawWireSphere(this.transform.position, _attackRadius);
-    }
-
-    public override bool IsValidPathAvailable(Node current, Node next)
-    {
-        foreach (NodeType type in current.NodeTypes)
+        if (PathfindingManager.Instance != null)
         {
-            if (type == NodeType.Ground && next.ContainsNodeType(new List<NodeType> { NodeType.Ground, NodeType.Wall, NodeType.Corner }))
-            {
-                return true;
-            }
-            else if (type == NodeType.Wall && (((next.ContainsNodeType(NodeType.Wall) || next.ContainsNodeType(NodeType.Corner)) && current.Coordinates.x == next.Coordinates.x) || next.ContainsNodeType(new List<NodeType> { NodeType.Ground, NodeType.Ceiling })))
-            {
-                return true;
-            }
-            else if (type == NodeType.Ceiling && next.ContainsNodeType(new List<NodeType> { NodeType.Ceiling, NodeType.Wall, NodeType.Corner }))
-            {
-                return true;
-            }
-            else if (type == NodeType.Corner && ((next.ContainsNodeType(NodeType.Wall) && current.Coordinates.x == next.Coordinates.x) || ((next.ContainsNodeType(NodeType.Ground) || next.ContainsNodeType(NodeType.Ceiling)) && current.Coordinates.y == next.Coordinates.y)))
-            {
-                return true;
-            }
+            Node playerNode = PathfindingManager.Instance.CurrentGrid.GetNodeClosestTo(PlayerManager.Instance.PlayerCombat.transform.position, validNodeTypes);
+            Gizmos.DrawSphere(playerNode.Coordinates, 0.2f);
         }
-        return false;
     }
 
-    public void Pathfind()
+    public override bool IsValidPathAvailable(Edge edge)
     {
-        // Get path to goal
-        // Store the next node you have to go to in CurrentTarget
-        // Move towards that target
+        return validEdgeTypes.Contains(edge.EdgeType);
     }
 
     private void SetVelocity()
@@ -418,7 +398,7 @@ public class BasicSpider : Enemy
         GoalNode = PathfindingManager.Instance.CurrentGrid.GetNodeClosestTo(PlayerManager.Instance.PlayerCombat.transform.position, validNodeTypes);
         // Set the path from the spider to the player
         CurrentPath = Pathfinder.AStarPathfinding(this, CurrentNode, GoalNode);
-        NextNode = CurrentPath.GetNextNode();
+        NextNode = CurrentPath.GetNextEdge().GetOtherNode(CurrentNode);
     }
 
     private void UpdateAngryState()
@@ -430,21 +410,22 @@ public class BasicSpider : Enemy
         {
             GoalNode = playerNode;
             CurrentPath = Pathfinder.AStarPathfinding(this, CurrentNode, GoalNode);
-            NextNode = CurrentPath.GetNextNode();
+            NextNode = CurrentPath.GetNextEdge().GetOtherNode(CurrentNode);
         }
         // If the spider has reached next node, update next node to the subsequent node in the path
         if (NextNode == CurrentNode)
         {
-            NextNode = CurrentPath.GetNextNode();
+            NextNode = CurrentPath.GetNextEdge().GetOtherNode(CurrentNode);
         }
-        bool furtherAlongPath = CurrentPath.Contains(CurrentNode) && NextNode != CurrentNode;
+
+        bool furtherAlongPath = CurrentPath.ContainsNode(CurrentNode) && NextNode != CurrentNode;
         if (furtherAlongPath)
         {
             while (CurrentNode != NextNode)
             {
-                NextNode = CurrentPath.GetNextNode();
+                NextNode = CurrentPath.GetNextEdge().GetOtherNode(CurrentNode);
             }
-            NextNode = CurrentPath.GetNextNode();
+            NextNode = CurrentPath.GetNextEdge().GetOtherNode(CurrentNode);
         }
 
         // If currentNode = nextNode

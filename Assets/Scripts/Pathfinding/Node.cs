@@ -19,13 +19,13 @@ namespace Pathfinding
 
     public class Node
     {
-        public List<Node> Neighbors { get; private set; }
+        public List<Edge> Neighbors { get; private set; }
         public Vector2 Coordinates { get; private set; }
         public List<NodeType> NodeTypes { get; private set; }
 
         public Node(Vector2 Coordinates, float distanceBetweenNodes)
         { 
-            Neighbors = new List<Node>();
+            Neighbors = new List<Edge>();
             this.Coordinates = Coordinates;
             NodeTypes = InitializeNodeTypes(distanceBetweenNodes);
         }
@@ -103,12 +103,17 @@ namespace Pathfinding
 
         public void AddNeighbor(Node node)
         {
-            Neighbors.Add(node);
+            Neighbors.Add(new Edge(this, node));
         }
 
         public void RemoveNeighbor(Node node)
         {
-            Neighbors.Remove(node);
+            Edge edge = Neighbors.Find(e => e.ContainsNode(node));
+            while (edge != null)
+            {
+                Neighbors.Remove(edge);
+                edge = Neighbors.Find(e => e.ContainsNode(node));
+            }
         }
 
         public void ConnectNode(Node node)
@@ -125,7 +130,8 @@ namespace Pathfinding
 
         public bool IsConnectedWith(Node node)
         {
-            return Neighbors.Contains(node);
+            Edge edge = Neighbors.Find(e => e.ContainsNode(node));
+            return edge != null;
         }
 
         #endregion

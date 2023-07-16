@@ -6,46 +6,49 @@ using UnityEngine;
 
 namespace Pathfinding
 {
-    public class Path : IEnumerable<Node>
+    public class Path : IEnumerable<Edge>
     {
-        private Stack<Node> Nodes;
-        public int Count => Nodes.Count;
+        private readonly Stack<Edge> Edges;
+        public int Count => Edges.Count;
 
-        public Path(Stack<Node> Nodes)
+        public Path(Stack<Edge> Edges)
         {
-            if (Nodes == null)
-            {
-                throw new System.ArgumentNullException("The stack of nodes is null");
-            }
-            this.Nodes = Nodes;
+            this.Edges = Edges ?? throw new System.ArgumentNullException("The stack of nodes is null");
         }
     
         public bool HasPath()
         {
             return Count > 0;
         }
-        public Node Peek()
+        public Edge Peek()
         {
-            return Nodes.Peek();
+            return Edges.Peek();
         }
 
-        public bool Contains(Node node)
+        public bool ContainsNode(Node node)
         {
-            return Nodes.Contains(node);
+            foreach(Edge edge in Edges)
+            {
+                if (edge.ContainsNode(node))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
-        public Node GetNextNode()
+        public Edge GetNextEdge()
         {
             if (!HasPath())
             {
                 throw new System.Exception("The path does not exist, therefore there is no next node");
             }
-            return Nodes.Count > 1 ? Nodes.Pop() : Nodes.Peek();
+            return Edges.Count > 1 ? Edges.Pop() : Edges.Peek();
         }
 
-        public IEnumerator<Node> GetEnumerator()
+        public IEnumerator<Edge> GetEnumerator()
         {
-            return new PathEnumerator(Nodes);
+            return new PathEnumerator(Edges);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -53,15 +56,15 @@ namespace Pathfinding
             return GetEnumerator();
         }
 
-        private class PathEnumerator : IEnumerator<Node>
+        private class PathEnumerator : IEnumerator<Edge>
         {
-            public Node Current => copy.Pop();
+            public Edge Current => copy.Pop();
             object IEnumerator.Current => Current;
-            private Stack<Node> copy;
+            private readonly Stack<Edge> copy;
 
-            public PathEnumerator(Stack<Node> original)
+            public PathEnumerator(Stack<Edge> original)
             {
-                this.copy = new Stack<Node>(new Stack<Node>(original));
+                this.copy = new Stack<Edge>(new Stack<Edge>(original));
             }  
 
             public void Dispose()

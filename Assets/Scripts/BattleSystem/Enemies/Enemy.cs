@@ -23,6 +23,7 @@ public abstract class Enemy : MonoBehaviour, IPathfindingRestrictor
     public Node NextNode; // The next node in our path
     public Node GoalNode; // The node we want to end up at
     public List<NodeType> validNodeTypes;
+    public List<EdgeType> validEdgeTypes;
     public Transform NodeCheck;
 
     [Header("Knockback")]
@@ -51,7 +52,7 @@ public abstract class Enemy : MonoBehaviour, IPathfindingRestrictor
         Animator = GetComponent<Animator>();
         SpriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
-        CurrentPath = new Path(new Stack<Node>());
+        CurrentPath = new Path(new Stack<Edge>());
     }
 
     public virtual void Update()
@@ -67,7 +68,7 @@ public abstract class Enemy : MonoBehaviour, IPathfindingRestrictor
 
     }
 
-    public virtual bool IsValidPathAvailable(Node current, Node next)
+    public virtual bool IsValidPathAvailable(Edge edge)
     {
         return true;
     }
@@ -154,11 +155,9 @@ public abstract class Enemy : MonoBehaviour, IPathfindingRestrictor
         Gizmos.color = Color.blue;
         if (CurrentPath != null && CurrentPath.Count != 0)
         {
-            Node current = CurrentPath.Peek();
-            foreach (Node next in CurrentPath)
+            foreach (Edge next in CurrentPath)
             {
-                Gizmos.DrawLine(current.Coordinates, next.Coordinates);
-                current = next;
+                Gizmos.DrawLine(next.GetNode1().Coordinates, next.GetNode2().Coordinates);
             }
         }
 

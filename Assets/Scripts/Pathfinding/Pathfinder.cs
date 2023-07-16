@@ -26,7 +26,7 @@ namespace Pathfinding
             }
             MinPQ<NodeWithPriority> frontier = new MinPQ<NodeWithPriority>(NodeWithPriority.ByPriorityOrder());
             frontier.Insert(new NodeWithPriority(start, 0));
-            Dictionary<Node, Node> cameFrom = new Dictionary<Node, Node>();
+            Dictionary<Node, Edge> cameFrom = new Dictionary<Node, Edge>();
             Dictionary<Node, float> costSoFar = new Dictionary<Node, float>();
             cameFrom.Add(start, null);
             costSoFar.Add(start, 0);
@@ -40,36 +40,39 @@ namespace Pathfinding
                     break;
                 }
 
-                foreach (Node next in current.Neighbors)
+                foreach (Edge next in current.Neighbors)
                 {
-                    if (!restrictor.IsValidPathAvailable(current, next))
+                    if (!restrictor.IsValidPathAvailable(next))
                     {
                         continue;
                     }
-                    float newCost = costSoFar[current] + Grid.CostFrom(current, next);
-                    bool alreadyVisited = costSoFar.ContainsKey(next);
-                    if (!alreadyVisited || newCost < costSoFar[next])
+                    float newCost = costSoFar[current] + Grid.CostFrom(current, next.GetOtherNode(current));
+                    bool alreadyVisited = costSoFar.ContainsKey(next.GetOtherNode(current));
+                    if (!alreadyVisited || newCost < costSoFar[next.GetOtherNode(current)])
                     {
-                        costSoFar[next] = newCost;
-                        float priority = newCost + goal.GetManhattanDistanceTo(next);
-                        frontier.Insert(new NodeWithPriority(next, priority));
-                        cameFrom[next] = current;
+                        costSoFar[next.GetOtherNode(current)] = newCost;
+                        float priority = newCost + goal.GetManhattanDistanceTo(next.GetOtherNode(current));
+                        frontier.Insert(new NodeWithPriority(next.GetOtherNode(current), priority));
+                        cameFrom[next.GetOtherNode(current)] = next;
                     }
                 }
             }
 
             if (!cameFrom.ContainsKey(goal))
             {
-                return new Path(new Stack<Node>());
+                Debug.Log(goal.Coordinates);
+                return new Path(new Stack<Edge>());
             }
 
-            Stack<Node> path = new Stack<Node>();
+            Stack<Edge> path = new Stack<Edge>();
             {
-                Node current = goal;
-                while (current != start)
+                Node currentNode = goal;
+                Edge currentEdge = cameFrom[goal];
+                while (!currentEdge.ContainsNode(start))
                 {
-                    path.Push(current);
-                    current = cameFrom[current];
+                    path.Push(currentEdge);
+                    currentNode = currentEdge.GetOtherNode(currentNode);
+                    currentEdge = cameFrom[currentNode];
                 }
             }
 
