@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Pathfinding
 {
@@ -83,7 +84,9 @@ namespace Pathfinding
             {
             //    throw new System.ArgumentException("Node has to be one of the nodes in the edge");
             }
-            return node == _node1 ? _node2 : _node1;
+            Node tempNode = node == _node1 ? _node2 : _node1;
+            Debug.WriteLine($"Coordinates: {tempNode.Coordinates}");
+            return tempNode;
         }
 
         public bool ContainsNode(Node node)

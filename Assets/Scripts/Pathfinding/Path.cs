@@ -14,6 +14,7 @@ namespace Pathfinding
         public Path(Stack<Edge> Edges)
         {
             this.Edges = Edges ?? throw new System.ArgumentNullException("The stack of nodes is null");
+            Debug.Log($"Beginning Length: {Edges.Count}");
         }
     
         public bool HasPath()
@@ -43,6 +44,7 @@ namespace Pathfinding
             {
                 throw new System.Exception("The path does not exist, therefore there is no next node");
             }
+            Debug.Log($"Check Length: {Edges.Count}");
             return Edges.Count > 1 ? Edges.Pop() : Edges.Peek();
         }
 

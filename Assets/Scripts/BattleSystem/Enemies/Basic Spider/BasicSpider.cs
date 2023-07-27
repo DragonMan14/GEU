@@ -77,8 +77,10 @@ public class BasicSpider : Enemy
         ApplyGravity();
     }
 
-    public override void CustomUpdate()
+    public override void Update()
     {
+        base.Update();
+
         _closeRangeUpdateFacingCooldown -= Time.deltaTime;
         _rotationCooldown -= Time.deltaTime;
 
@@ -403,30 +405,45 @@ public class BasicSpider : Enemy
 
     private void UpdateAngryState()
     {
-        // Get the node closest to the player's position
+
         Node playerNode = PathfindingManager.Instance.CurrentGrid.GetNodeClosestTo(PlayerManager.Instance.PlayerCombat.transform.position, validNodeTypes);
-        // If that is different from what it was before, update the goal node, current path, and next node
-        if (GoalNode != playerNode)
+        bool notOnPath = CurrentNode != LastFrameCurrentNode || CurrentNode != NextNode;
+        if (GoalNode != playerNode || notOnPath)
         {
             GoalNode = playerNode;
             CurrentPath = Pathfinder.AStarPathfinding(this, CurrentNode, GoalNode);
             NextNode = CurrentPath.GetNextEdge().GetOtherNode(CurrentNode);
         }
-        // If the spider has reached next node, update next node to the subsequent node in the path
+
         if (NextNode == CurrentNode)
         {
             NextNode = CurrentPath.GetNextEdge().GetOtherNode(CurrentNode);
         }
 
-        bool furtherAlongPath = CurrentPath.ContainsNode(CurrentNode) && NextNode != CurrentNode;
-        if (furtherAlongPath)
-        {
-            while (CurrentNode != NextNode)
-            {
-                NextNode = CurrentPath.GetNextEdge().GetOtherNode(CurrentNode);
-            }
-            NextNode = CurrentPath.GetNextEdge().GetOtherNode(CurrentNode);
-        }
+        //// Get the node closest to the player's position
+        //Node playerNode = PathfindingManager.Instance.CurrentGrid.GetNodeClosestTo(PlayerManager.Instance.PlayerCombat.transform.position, validNodeTypes);
+        //// If that is different from what it was before, update the goal node, current path, and next node
+        //if (GoalNode != playerNode)
+        //{
+        //    GoalNode = playerNode;
+        //    CurrentPath = Pathfinder.AStarPathfinding(this, CurrentNode, GoalNode);
+        //    NextNode = CurrentPath.GetNextEdge().GetOtherNode(CurrentNode);
+        //}
+        //// If the spider has reached next node, update next node to the subsequent node in the path
+        //if (NextNode == CurrentNode)
+        //{
+        //    NextNode = CurrentPath.GetNextEdge().GetOtherNode(CurrentNode);
+        //}
+
+        //bool furtherAlongPath = CurrentPath.ContainsNode(CurrentNode) && NextNode != CurrentNode;
+        //if (furtherAlongPath)
+        //{
+        //    while (CurrentNode != NextNode)
+        //    {
+        //        NextNode = CurrentPath.GetNextEdge().GetOtherNode(CurrentNode);
+        //    }
+        //    NextNode = CurrentPath.GetNextEdge().GetOtherNode(CurrentNode);
+        //}
 
         // If currentNode = nextNode
         // If reached farther along the path

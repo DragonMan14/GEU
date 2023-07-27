@@ -19,9 +19,10 @@ public abstract class Enemy : MonoBehaviour, IPathfindingRestrictor
 
     [Header("Pathfinding")]
     public Path CurrentPath; // The path from the current node to goal node
-    public Node CurrentNode; // The node the enemy is currently at
+    public Node CurrentNode { get; private set; } // The node the enemy is currently at
     public Node NextNode; // The next node in our path
     public Node GoalNode; // The node we want to end up at
+    public Node LastFrameCurrentNode;
     public List<NodeType> validNodeTypes;
     public List<EdgeType> validEdgeTypes;
     public Transform NodeCheck;
@@ -57,15 +58,15 @@ public abstract class Enemy : MonoBehaviour, IPathfindingRestrictor
 
     public virtual void Update()
     {
-        CurrentNode = PathfindingManager.Instance.CurrentGrid.GetNodeClosestTo(NodeCheck.position, validNodeTypes);
         UpdateFacing();
         UpdateCurrentState();
-        CustomUpdate();
+        SetCurrentNode();
     }
 
-    public virtual void CustomUpdate()
+    public void SetCurrentNode()
     {
-
+        LastFrameCurrentNode = CurrentNode;
+        CurrentNode = PathfindingManager.Instance.CurrentGrid.GetNodeClosestTo(NodeCheck.position, validNodeTypes);
     }
 
     public virtual bool IsValidPathAvailable(Edge edge)
